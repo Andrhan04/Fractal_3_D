@@ -1,4 +1,5 @@
 #pragma once
+#include "Point.h"
 
 class Line {
 private:
@@ -11,5 +12,9 @@ public:
 		end = Point(100, 100, 100);
 		vec = end - begin;
 	}
-
+	Line(Point b, Point e) {
+		begin = b;
+		end = e;
+		vec = end - begin;
+	}
 };

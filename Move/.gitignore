@@ -1,6 +1,7 @@
 /.vs
 /x64
+/Move
 /Move.sln
-/Move.vcxproj.filters
 /Move.vcxproj
 /Move.vcxproj.user
+/Move.vcxproj.filters

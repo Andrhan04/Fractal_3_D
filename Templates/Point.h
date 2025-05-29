@@ -1,8 +1,12 @@
 #pragma once
 #include <math.h>
+#include <string>
 class Point
 {
 public:
+    std::string Info() {
+        return "Point: " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z);
+    }
     Point(double X, double Y, double Z) {
         x = X;
         y = Y;
@@ -32,7 +36,7 @@ public:
         return new_p;
     }
 
-    Point operator + (Point & p) {
+    Point operator + (Point& p) {
         Point new_p = Point(x + p.x, y + p.y, z + p.z);
         return new_p;
     }
@@ -50,7 +54,7 @@ public:
     Point operator = (const Point& p) {
         return p;
     }
-    
+
     bool operator == (const Point& p) const
     {
         return p.x == x && p.y == y && p.z == z;
@@ -68,7 +72,6 @@ public:
     {
         return p->x != x || p->y == y || p->z == z;
     }
-
 private:
-
+    
 };

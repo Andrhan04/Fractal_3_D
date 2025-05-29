@@ -1,20 +1,35 @@
 #pragma once
 #include "Point.h"
+#include "Figure.h"
 
 class BuferZone{
 private:
-    Point p;
-    double up;
-    double down;
-    double range;
+    Figure base;
+    Plane down;
+    double length;
+    Point direction;
 public:
     BuferZone() {
-        p = Point();
-        up = 100;
-        down = 0;
-        range = 100;
+        base = Figure();
+        length = 0;
     }
-	bool In_Figure(){
-
+    BuferZone(Figure f, double len) {
+        base = f;
+        length = len;
+    }
+    bool In_Figure(Point p) {
+        double dist = down.Distance(p);
+        if (dist < 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+	bool In_Figure(Point& p){
+        return true;
 	}
+    bool In_Figure(Point* p) {
+        return true;
+    }
 };
