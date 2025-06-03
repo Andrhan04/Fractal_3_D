@@ -20,11 +20,23 @@ public:
 		O = Point();
 		r = 0;
 	}
-	bool In_Figure(Point& p) {
-		return (O - p).len() <= r;
+	Figure(Figure& f,double dif) {
+		*this = f;
+		p = Plane(p, dif);
 	}
-private:
+	bool In_Figure(Point& pt) {
+		return (O - pt).len() <= r && p.In_plane(pt);
+	}
+	double Dist(Point& pt) {
+		if (p.In_plane(pt)) {
+			return std::max(0.0, (O - pt).len() - r);
+		}
+		else {
+			return p.Distance(pt);
+		}
+	}
 	Point O;
+private:
 	Plane p;
 	double r;
 };

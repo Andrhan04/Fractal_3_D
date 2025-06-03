@@ -13,6 +13,10 @@ public:
 		c = v1.x * v2.y - v2.x * v1.y;
 		d = -p.x * a - p.y * b - p.z * c;
 	}
+	Plane(Plane &pl, double dif) {
+		*this = pl;
+		d += dif;
+	}
 	Plane(Point& A, Point& B, Point& C) {
 		v1 = B - A;
 		v2 = C - A;
@@ -46,10 +50,17 @@ public:
 	double Distance(Point& p) {
 		return a * p.x + b * p.y + c * p.z;
 	}
+	bool In_plane(Point& p) {
+		return abs(a * p.x + b * p.y + c * p.z + d) <= eps;
+	}
+	Plane operator = (const Plane& p) {
+		return p;
+	}
 private:
 	Point v1;
 	Point v2;
 	Point n;
 	Point p;
 	double a, b, c, d;
+	const double eps = 1e-6;
 };
