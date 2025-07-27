@@ -3,10 +3,13 @@
 #include <math.h>
 #include "Bufer.h"
 #include "Point.h"
+#include "../Templates/Fractal.h"
+
+using namespace std;
 
 class Particle{
 public:
-    Particle() {
+    Particle() { // заглушка
         std::random_device device; 
         random_generator_.seed(device());
         buf = new BuferZone();
@@ -16,13 +19,14 @@ public:
         Angle_vertical = 0;
         Work = false;
     }
-    Particle(Point p, BuferZone *b) {
+    Particle(Point p, BuferZone *b, Fractal *f) { // для генерации и посева
         std::random_device device;
         random_generator_.seed(device());
         buf = b;
         position = p;
+        root = f;
         speed = 1;
-        Angle_gorizontal = 1;
+        Angle_gorizontal = 0;
         Angle_vertical = 0;
         Work = false;
     }
@@ -31,14 +35,17 @@ public:
         Angle_gorizontal = returnRandom(1, 360);
         Angle_vertical = returnRandom(1, 180);
         if (Work) {
-
+            Point p = Dif();
+            StepInWork(p);
         }
         else {
-
+            Point p = Dif();
+            StepInBufer(p);
         }
     }
 private:
     BuferZone *buf;
+    Fractal *root;
     bool Work;
     double Angle_gorizontal,Angle_vertical, speed;
     const double Pi = acos(0) * 2.0, eps = 1e-6;
@@ -61,7 +68,10 @@ private:
     }
 
     void StepInWork(Point& p) {
-        position = position + p;
+        Point new_pos = position + p;
+        if (root->In_Figure(new_pos)) {
+            position = new_pos;
+        }
     }
 
     void StepInBufer(Point& dif) {
