@@ -1,0 +1,1 @@
+{"Config_id":0,"Bufer":0,"Fractal":0,"Size":100,"Point":0}
