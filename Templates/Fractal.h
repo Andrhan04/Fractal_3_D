@@ -5,20 +5,13 @@ class Fractal
 {
 public:
 	Fractal();
-	
 	bool In_Figure(Point& p) {
-		// ������������ �������� ��� ����� �������� 
+		// 
 		return true;
 	}
-
+	Fractal *left;
+	Fractal *right;
 private:
 
 };
 
-Fractal::Fractal()
-{
-}
-
-Fractal::~Fractal()
-{
-}

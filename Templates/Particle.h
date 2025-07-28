@@ -1,8 +1,8 @@
 #pragma once
 #include <random>
 #include <math.h>
-#include "Bufer.h"
-#include "Point.h"
+#include "../Templates/Bufer.h"
+#include "../Templates/Point.h"
 #include "../Templates/Fractal.h"
 
 using namespace std;

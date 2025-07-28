@@ -23,7 +23,7 @@ public:
     }
 	bool In_Figure(Point& p){
         double dist_out_dn = down.Dist(p);
-        double dist_out_up = down.Dist(p);
+        double dist_out_up = up.Dist(p);
         if (dist_out_dn * dist_out_up < 0) {
             Figure help = Figure(up, dist_out_up);
             return help.In_Figure(p);
