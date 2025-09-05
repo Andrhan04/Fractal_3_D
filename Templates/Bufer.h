@@ -15,6 +15,10 @@ public:
         length = 0;
         direction = Point(0, 0, 0);
     }
+    BuferZone(Figure &new_up, Figure& new_down) {
+        up = Figure();
+        down = Figure();
+    }
     BuferZone(Figure u, Figure d, double len) {
         down = d;
         up = u;

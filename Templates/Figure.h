@@ -20,6 +20,10 @@ public:
 		O = Point();
 		r = 0;
 	}
+	Figure(Plane &new_plane, double &new_range) {
+		p = new_plane;
+		r = new_range;
+	}
 	Figure(Figure& f,double dif) {
 		*this = f;
 		p = Plane(p, dif);
