@@ -4,7 +4,7 @@
 #include "Plane.h"
 #include <string>
 
-class Figure{ // Окружность
+class Figure{ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 public:
 	int id = 0;
 	std::string get_param() {
