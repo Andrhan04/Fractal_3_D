@@ -1,22 +1,27 @@
 #pragma once
 #include <math.h>
 #include <string>
+#include <iostream>
+
+using namespace std;
 
 class Point
 {
 public:
     std::string Info() {
-        return "Point: " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z);
+        return "Point: " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z) + "\n";
     }
     Point(double X, double Y, double Z) {
         x = X;
         y = Y;
         z = Z;
+        //cerr << "CREATE POINT ON DEGIT \n\tX = " << x << "\n\tY = " << y << "\n\tZ = " << z << endl;
     }
     Point() {
         x = 0.0;
         y = 0.0;
         z = 0.0;
+        //cerr << "CREATE POINT \n\tX = " << x << "\n\tY = " << y << "\n\tZ = " << z << endl;
     }
     double x, y, z;
 
@@ -52,6 +57,7 @@ public:
     Point operator / (double deg) {
         return Point(x / deg, y / deg, z / deg);
     }
+
     Point operator = (const Point& p) {
         return p;
     }

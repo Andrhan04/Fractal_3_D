@@ -1,5 +1,8 @@
 #pragma once
 #include "Point.h"
+#include <string>
+
+using namespace std;
 
 class Plane
 {
@@ -15,7 +18,7 @@ public:
 	}
 	Plane(Plane &pl, double dif) {
 		*this = pl;
-		d += dif;
+		(*this).d += dif;
 	}
 	Plane(Point& A, Point& B, Point& C) {
 		v1 = B - A;
@@ -47,6 +50,9 @@ public:
 		b = n.y;
 		c = n.z;
 	}
+	string get_info() {
+		return to_string(a) + "x + (" + to_string(b) + ")y + (" + to_string(c) + ")z + (" + to_string(d) + ") = 0\n";
+	}
 	double Distance(Point& p) {
 		return a * p.x + b * p.y + c * p.z;
 	}
@@ -56,11 +62,11 @@ public:
 	Plane operator = (const Plane& p) {
 		return p;
 	}
-private:
 	Point v1;
 	Point v2;
 	Point n;
 	Point p;
 	double a, b, c, d;
+private:
 	const double eps = 1e-6;
 };
