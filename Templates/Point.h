@@ -79,6 +79,15 @@ public:
     {
         return p->x != x || p->y == y || p->z == z;
     }
+
+    Point* toPointer() {
+        return this;
+    }
+
+    const Point* toPointer() const {
+        return this;
+    }
+
 private:
     
 };

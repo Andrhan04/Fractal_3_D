@@ -17,7 +17,7 @@ int main()
     Fractal frac = Fractal();
     cout << frac.get_info() << endl;
     cout << "----------------------------------------------------------" << "\nPoint Chek\n";
-    frac = Fractal(f, new_f);
+    frac = Fractal(&f, &new_f);
     cout << frac.get_info() << endl;
     return 0;
 }
