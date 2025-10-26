@@ -4,30 +4,24 @@
 
 class BuferZone{
 private:
-    Figure up;
-    Figure down;
-    double length;
-    Point direction;
+    Figure *up;
+    Figure *down;
 public:
     BuferZone() {
-        up = Figure();
-        down = Figure();
-        length = 0;
-        direction = Point(0, 0, 0);
+        up = new Figure();
+        down = new Figure();
     }
     BuferZone(Figure &new_up, Figure& new_down) {
-        up = Figure();
-        down = Figure();
+        up = &new_up;
+        down = &new_down;
     }
-    BuferZone(Figure u, Figure d, double len) {
-        down = d;
-        up = u;
-        length = len;
-        direction = u.O - d.O;
+    BuferZone(Figure u, Figure d) {
+        down = &d;
+        up = &u;
     }
 	bool In_Figure(Point& p){
-        double dist_out_dn = down.Dist(p);
-        double dist_out_up = up.Dist(p);
+        double dist_out_dn = down->Dist(p);
+        double dist_out_up = up->Dist(p);
         if (dist_out_dn * dist_out_up < 0) {
             Figure help = Figure(up, dist_out_up);
             return help.In_Figure(p);

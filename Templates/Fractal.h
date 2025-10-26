@@ -8,13 +8,13 @@ class Fractal
 {
 public:
 	Fractal() {
-		cerr << "DEFAULT FRACTAL" << endl;
+		//cerr << "DEFAULT FRACTAL" << endl;
 		up = new Figure();
 		double dif = 100.0;
 		down = new Figure(up, dif);
 	}
 	Fractal(Figure* new_up, Figure* new_down) {
-		cerr << "DO FRACTAL IN 2 PLANE\n";
+		//cerr << "DO FRACTAL IN 2 PLANE\n";
 		up = new_up;
 		down = new_down;
 	}
@@ -28,10 +28,11 @@ public:
 		right = new_right;
 	}
 	bool In_Figure(Point& p) {
+		//cerr << "Check IS point in Segment in Fractal\n";
 		double dist_out_dn = down->Dist(p);
 		double dist_out_up = up->Dist(p);
-		cerr << dist_out_up << ' ' << dist_out_dn << endl;
-		if (dist_out_dn * dist_out_up < 0) {
+		//cerr << dist_out_up << ' ' << dist_out_dn << endl;
+		if (dist_out_dn * dist_out_up <= 0) {
 			Figure *help = new Figure(up, dist_out_up);
 			return help->In_Figure(p);
 		}
