@@ -7,10 +7,13 @@ private:
     Figure *up;
     Figure *down;
 public:
-    BuferZone() {
+    BuferZone() { // Заглушка
         up = new Figure();
         down = new Figure();
     }
+    string get_info() {
+		return "up = " + up->get_param() + "\ndown = " + down->get_param();
+	}
     BuferZone(Figure &new_up, Figure& new_down) {
         up = &new_up;
         down = &new_down;
@@ -18,6 +21,10 @@ public:
     BuferZone(Figure u, Figure d) {
         down = &d;
         up = &u;
+    }
+    BuferZone(Figure *u, Figure *d) {
+        down = d;
+        up = u;
     }
 	bool In_Figure(Point& p){
         double dist_out_dn = down->Dist(p);

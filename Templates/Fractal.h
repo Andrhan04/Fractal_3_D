@@ -21,12 +21,6 @@ public:
 	string get_info() {
 		return "up = " + up->get_param() + "\ndown = " + down->get_param();
 	}
-	Fractal(Figure *new_up, Figure *new_down, Fractal *new_left, Fractal* new_right) {
-		up = new_up;
-		down = new_down;
-		left = new_left;
-		right = new_right;
-	}
 	bool In_Figure(Point& p) {
 		//cerr << "Check IS point in Segment in Fractal\n";
 		double dist_out_dn = down->Dist(p);
@@ -43,10 +37,12 @@ public:
 	Fractal operator = (const Fractal& f) {
 		return f;
 	}
-	Fractal *left = nullptr;
-	Fractal *right = nullptr;
+
 	Figure *up;
 	Figure *down;
+	
+	Fractal* prev = nullptr;
+	Fractal* next = nullptr;
 private:
 
 };

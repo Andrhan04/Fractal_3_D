@@ -22,6 +22,13 @@ public:
 		p = new Plane(pt, my_point_1, my_point_2);
 		r = range;
 	}
+	Figure(Point *pt, double range) { // Построение окружности || оси OZ с центром O и радиусом range
+		O = pt;
+		Point my_point_1 = Point(1, 0, 0) + pt;
+		Point my_point_2 = Point(0, 1, 0) + pt;
+		p = new Plane(*pt, my_point_1, my_point_2);
+		r = range;
+	}
 //--------------------------------------------------------------------------------------------------------
 	Figure() { // Заглушка на построение окружности 
 		// On default || OZ and Range = 10 with O = (0, 0, 0)
