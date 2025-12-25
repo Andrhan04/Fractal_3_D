@@ -22,13 +22,15 @@ bool input_pole(int pole_id, int bufer_id, double size_frac) {
         return false;
     }
     
-    string path_to_file_bufer = "..\\Sowing\\Bufer\\Bufer_" + to_string(pole_id) + ".txt";
+    string path_to_file_bufer = "..\\Sowing\\Bufer\\Bufer_" + to_string(bufer_id) + ".txt";
     ifstream file_bufer(path_to_file_bufer);
     if (!file_bufer.is_open()) {
         cerr << "File whith Bufer not open\n";
         file_fractal.close();
         file_bufer.close();
+        return false;
     }
+    
     cout << "Bufer input\n";
     vector<Figure* > for_buf;
     for (double x, y, z; file_bufer >> x >> y >> z;) {
