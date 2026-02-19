@@ -14,40 +14,6 @@ using namespace std;
 using namespace filesystem;
 using json = nlohmann::json;
 
-class Generator {
-private:
-    std::mt19937 random_generator_;
-    int returnRandom(int min, int max) {
-        if (max < min) std::swap(max, min);
-        std::uniform_int_distribution<int> range(min, max);
-        return range(random_generator_);
-    }
-    bool chek(double x, double y, double sz) {
-        return x * x + y * y <= sz * sz;
-    }
-    double get(double x, double sz) {
-        return sz * sz - x * x;
-    }
-public:
-    Generator() {
-        std::random_device device;
-        random_generator_.seed(device());
-    }
-    int get_int(int mn, int mx) {
-        return returnRandom(std::min(mn, mx), std::max(mx, mn));
-    }
-
-    Point get_particle(int mn_x, int mx_x, int y, int sz) {
-        Point p = Point();
-        p.x = returnRandom(mn_x, mx_x);
-        double new_y = returnRandom(-sz, sz);
-        double new_z = get(new_y, sz) * (returnRandom(0, 1000) & 1 ? 1 : -1);
-        p.y = y + sz;
-        p.z = new_z;
-        return p;
-    }
-};
-
 
 int get_new_id(string floder) {
     if (exists(floder) && is_directory(floder)) {
@@ -98,44 +64,50 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
     file_bufer.open(path_to_file_bufer);
     vector<Figure* > for_buf;
     for (double x, y, z; file_bufer >> x >> y >> z;) {
-        cout << x << ' ' << y << ' ' << z << endl;
+        //cout << x << ' ' << y << ' ' << z << endl;
         Point* p = new Point(x, y, z);
         Figure* fig = new Figure(p, sz);
         for_buf.push_back(fig);
     }
     BuferZone* buf = new BuferZone(for_buf[1], for_buf[0]);
-    cout << buf->get_info() << "Bufer Zone is input" << endl;
+    cout << buf->get_info();
+    cout << "Bufer Zone is input" << endl;
     file_bufer.close();
 
     vector<Point> particles;
-    Generator g = Generator();
     int repeet = 0, blya = 0;
     while (particles.size() < n) {
-        Point p = g.get_particle(mn_x, mx_x, curr_y, sz);
+        Point p = buf->generate_point();
         bool need_push = true;
-        for (Point& save_p : particles) {
+        /*for (Point& save_p : particles) {
             if (save_p == p) {
                 need_push = false;
             }
-        }
+        }*/
 
-        if (need_push && buf->In_Figure(p)) {
+        //if (need_push && buf->In_Figure(p)) {
             particles.push_back(p);
-        }
-        else {
-            if (need_push) {
-                blya++;
-            }
-            repeet++;
-        }
+        //}
+        //else {
+        //    if (need_push) {
+        //        blya++;
+        //    }
+        //    repeet++;
+        //    //cout << p.Info() << endl;
+        //}
 
-        if (repeet == n * 4 && particles.size() * 3 < n) {
+        /*if (repeet == n * 4 && particles.size() * 3 < n) {
             if (blya > 10) {
                 cout << blya << " Generate" << endl;
+                cout << "mn_x = " << mn_x << endl;
+                cout << "mx_x = " << mx_x << endl;
+                cout << "curr_y = " << curr_y << endl;
+                cout << "sz = " << sz << endl;
+
             }
             cout << "Error in function" << endl;
             return false;
-        }
+        }*/
     }
     
     string path_to_file_save = "..\\Sowing\\Particle\\points_" + to_string(id) + ".txt";
@@ -148,6 +120,7 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
         for (Point& p : particles) {
             file << p.x << ' ' << p.y << ' ' << p.z << endl;
         }
+        cout << path_to_file_save << " is creare and write point" << endl;
         file.close();
         return true;
     }
