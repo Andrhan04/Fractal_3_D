@@ -1,6 +1,5 @@
-Move
-x64
-Move.sln
-Move.vcxproj
-Move.vcxproj.filters
-Move.vcxproj.user
+# Игнорировать все файлы
+*
+
+# Не игнорировать файлы .cpp
+!*.cpp
