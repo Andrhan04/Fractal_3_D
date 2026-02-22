@@ -2,12 +2,13 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <memory> 
+#include <memory>
 #include "..\Templates\json.hpp"
 #include "..\Templates\MyReader.h"
 #include "..\Templates\Bufer.h"
 #include "..\Templates\Fractal.h"
 #include "..\Templates\Particle.h"
+#include "..\Templates\MyWriter.h"
 
 using json = nlohmann::json;
 using namespace std;
@@ -44,7 +45,7 @@ void input(int conf_id, vector<Particle>& particles) {
 	}
 }
 
-void programm(int steps, int conf_id) {
+void programm(int steps, int conf_id, int exp_id) {
 	vector<Particle> particles;
 	input(conf_id, particles);
 	if(particles.size() == 0) {
@@ -56,6 +57,16 @@ void programm(int steps, int conf_id) {
 			particles[i].step();
 		}
 	}
+	MyWriter writer;
+	int id = writer.write_result_experiment(particles);
+
+	json j;
+	j["conf_id"] = conf_id;
+	j["experiment_id"] = exp_id;
+	j["steps"] = steps;
+	j["particles_count"] = particles.size();
+	j["result"] = id;
+	writer.write_result_experiment_config(j, exp_id);
 }
 
 int main() {
@@ -67,10 +78,11 @@ int main() {
 			int conf_id = value["conf_id"]; // ID конфигурации
 			int repeat = value["repeat"]; // сколько раз запускаем одну конфигурацию
 			int steps = value["steps"]; // сколько шагов сделают частицы
+			int exp_id = value["exp_id"]; // ID эксперимента для сохранения результатов
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
 			for (int i = 0; i < repeat; i++) {
 				cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
-				programm(steps, conf_id);
+				programm(steps, conf_id, exp_id);
 			}
 		}
 		return 0;
