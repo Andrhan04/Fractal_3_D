@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <algorithm>
 #include <random>
@@ -49,7 +49,7 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
     if (!file_bufer.is_open()) {
         cerr << "File whith Bufer not open\n";
         file_bufer.close();
-        return false;
+		throw runtime_error("File whith Bufer not open");
     }
     else {
         double buf_x1, buf_x2, buf_y1, buf_y2, buf_z1, buf_z2;
@@ -64,13 +64,12 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
     file_bufer.open(path_to_file_bufer);
     vector<Figure* > for_buf;
     for (double x, y, z; file_bufer >> x >> y >> z;) {
-        //cout << x << ' ' << y << ' ' << z << endl;
         Point* p = new Point(x, y, z);
         Figure* fig = new Figure(p, sz);
         for_buf.push_back(fig);
     }
     BuferZone* buf = new BuferZone(for_buf[1], for_buf[0]);
-    cout << buf->get_info();
+    cout << *buf;
     cout << "Bufer Zone is input" << endl;
     file_bufer.close();
 
@@ -79,24 +78,23 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
     while (particles.size() < n) {
         Point p = buf->generate_point();
         bool need_push = true;
-        /*for (Point& save_p : particles) {
+        for (Point& save_p : particles) {
             if (save_p == p) {
                 need_push = false;
             }
-        }*/
+        }
 
-        //if (need_push && buf->In_Figure(p)) {
+        if (need_push && buf->In_Figure(p)) {
             particles.push_back(p);
-        //}
-        //else {
-        //    if (need_push) {
-        //        blya++;
-        //    }
-        //    repeet++;
-        //    //cout << p.Info() << endl;
-        //}
+        }
+        else {
+            if (need_push) {
+                blya++;
+            }
+            repeet++;
+        }
 
-        /*if (repeet == n * 4 && particles.size() * 3 < n) {
+        if (repeet == n * 4 && particles.size() * 3 < n) {
             if (blya > 10) {
                 cout << blya << " Generate" << endl;
                 cout << "mn_x = " << mn_x << endl;
@@ -105,16 +103,14 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
                 cout << "sz = " << sz << endl;
 
             }
-            cout << "Error in function" << endl;
-            return false;
-        }*/
+			throw runtime_error("Error in function");
+        }
     }
     
     string path_to_file_save = "..\\Sowing\\Particle\\points_" + to_string(id) + ".txt";
     ofstream file(path_to_file_save);
     if (!file.is_open()) {
-        cerr << "File to save particles is not open" << endl;
-        return false;
+		throw runtime_error("File to save particles is not open");
     }
     else {
         for (Point& p : particles) {
@@ -122,8 +118,8 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
         }
         cout << path_to_file_save << " is creare and write point" << endl;
         file.close();
-        return true;
     }
+    return true;
 }
 
 
@@ -142,13 +138,14 @@ signed main(){
     string file_config = "..\\Sowing\\Config\\Conf_" + to_string(id_confid) + ".json";
     ifstream f(file_input);
     if (f.is_open()) {
+		cout << "File config is open" << endl;
         int id_buf, id_frac, n, sz;
         f >> id_buf >> id_frac >> n >> sz;
-        cout << id_buf << ' ' << n << endl;
         if (n < 1 || sz < 1) {
             cout << "N and size must be posible";
         }
         else {
+			cout << "Input is correct" << endl;
             if (generate_particle(n, sz, id_buf, id_sowing)) {
                 ofstream js(file_config);
                 json j;

@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <string>
 #include "..\Templates\Fractal.h"
@@ -40,7 +40,7 @@ bool input_pole(int pole_id, int bufer_id, double size_frac) {
         for_buf.push_back(fig);
     }
     BuferZone* buf = new BuferZone(for_buf[1], for_buf[0]);
-    cout << buf->get_info() << "Bufer Zone is input" << endl;
+    cout << *buf << "Bufer Zone is input" << endl;
 
     vector<Figure* > for_frctal;
     for (double x, y, z; file_fractal >> x >> y >> z;) {
@@ -63,7 +63,7 @@ bool input_pole(int pole_id, int bufer_id, double size_frac) {
             root->next = f;
             root = root->next;
         }
-        cout << f->get_info() << endl;
+        cout << *f << endl;
     }
 
 
@@ -108,7 +108,7 @@ int main(){
 // Test Fractal
     cout << "-------------------------------------------------------------\n\tFractal\n" << endl;
     Fractal frac = Fractal();
-    cout << frac.get_info() << endl;
+    cout << frac << endl;
     cout << "----------------------------------------------------------" << "\nPoint Chek\n";
     Point *p = new Point(0, 0, -100);
     cout << "CREATE " << p->Info() << endl;
