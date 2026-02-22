@@ -1,6 +1,6 @@
 #pragma once
 #include <random>
-#include <cmath>          // заменили math.h на cmath для C++
+#include <cmath>
 #include "../Templates/Bufer.h"
 #include "../Templates/Point.h"
 #include "../Templates/Fractal.h"
