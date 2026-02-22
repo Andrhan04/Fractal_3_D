@@ -69,6 +69,15 @@ void programm(int steps, int conf_id, int exp_id) {
 	writer.write_result_experiment_config(j, exp_id);
 }
 
+void check_input(int conf_id) {
+	vector<Particle> particles;
+	input(conf_id, particles);
+	for (size_t i = 0; i < particles.size(); i++) {
+		cout << "Particle " << i + 1 << ": " << particles[i].position;
+		particles[i].check();
+	}
+}
+
 int main() {
 	MyReader reader;
 	try {
@@ -80,6 +89,7 @@ int main() {
 			int steps = value["steps"]; // сколько шагов сделают частицы
 			int exp_id = value["exp_id"]; // ID эксперимента для сохранения результатов
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
+			//check_input(conf_id);
 			for (int i = 0; i < repeat; i++) {
 				cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
 				programm(steps, conf_id, exp_id);

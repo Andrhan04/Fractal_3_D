@@ -67,9 +67,8 @@ public:
         , work(other.work)
         , randomGenerator_(std::move(other.randomGenerator_))
     {
-        // Ссылку нельзя присвоить nullptr, поэтому заменяем на временный объект
         other.buf = nullptr;
-        other.root = nullptr; // root теперь ссылка на временный Fractal
+        other.root = nullptr;
     }
 
     ~Particle() {
@@ -96,10 +95,13 @@ public:
     }
 
     void check() {
-		cout << "Particle position: " << position;
-		cout << "Fractal" << *root;
-		cout << "Bufer" << *buf;
-    }
+        if (buf->In_Figure(position)) {
+			cout << "OK\n";
+        }
+        else {
+			cout << "Particle is outside buffer at position: " << position;
+        }
+	}
 
 private:
     // Вложенные объекты теперь хранятся по ссылям
@@ -146,6 +148,15 @@ private:
         Point newPos = position + delta;
         if (buf->In_Figure(newPos)) {
             position = newPos;
+			//cout << "Particle moved in buffer to position: " << newPos;
+        }
+        else{
+            newPos.x += 1;
+            if (root->In_Figure(newPos)) {
+				cout << "Particle entered the fractal at position: " << newPos;
+                position = newPos;
+                work = true;
+            }
         }
     }
 };

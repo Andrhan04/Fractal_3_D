@@ -27,17 +27,18 @@ public:
 
     // Проверка, содержится ли точка в фигуре фрактала
     bool In_Figure(Point& p) {
-        double dist_out_dn = down->Dist(p);
-        double dist_out_up = up->Dist(p);
+        // Проверка попадания точки в цилиндр:
+        // Точка внутри цилиндра, если её проекция лежит между up и down
+        // и расстояние до оси цилиндра меньше радиуса.
+        double distAxis = up->DistAxis(p);   // расстояние до оси цилиндра
+        double hUp = up->Height(p);          // высота по отношению к up
+        double hDown = down->Height(p);      // высота по отношению к down
 
-        // Если расстояния до фигур имеют разные знаки, точка между ними
-        if (dist_out_dn * dist_out_up <= 0) {
-            // Создаём вспомогательную фигуру на основе верхней и расстояния до неё
-            auto help = make_shared<Figure>(up, dist_out_up);
-            return help->In_Figure(p);
-        } else {
-            return false;
+        // Проверяем, что точка между плоскостями up и down, и внутри радиуса
+        if (hUp * hDown <= 0 && distAxis <= up->r) {
+            return true;
         }
+        return false;
     }
 
     // Оператор присваивания: возвращает копию фрактала

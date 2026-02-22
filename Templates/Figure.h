@@ -109,5 +109,18 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 	Point* O;   // центр окружности
 	Plane* p;   // плоскость, в которой лежит окружность
 	double r;   // радиус
+
+	double DistAxis(const Point& pt) {
+		// Вычисляем расстояние от точки до оси окружности (проекция на плоскость)
+		Point toPt = pt - *O;              // вектор от центра к точке
+		Point normal = p->getNormal();     // нормаль к плоскости
+		double distAxis = std::abs(toPt.dot(normal)); // расстояние до оси
+		return distAxis;
+	}
+
+	double Height(const Point& pt) {
+		// Вычисляем высоту точки относительно плоскости окружности
+		return p->Distance(pt);
+	}
 private:
 };

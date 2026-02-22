@@ -35,8 +35,7 @@ public:
 	bool In_Figure(Point& p) {
 		double dist_out_dn = down->Dist(p);
 		double dist_out_up = up->Dist(p);
-		//cerr << dist_out_up << ' ' << dist_out_dn << endl;
-		if (dist_out_dn * dist_out_up <= 0) {
+		if (dist_out_dn < 0 && dist_out_up > 0) {
 			// Создаём вспомогательную фигуру на основе верхней и расстояния до точки
 			auto help = make_shared<Figure>(up, dist_out_up);
 			return help->In_Figure(p);
