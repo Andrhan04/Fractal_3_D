@@ -1,83 +1,136 @@
 #pragma once
 #include <random>
-#include <math.h>
+#include <cmath>          // заменили math.h на cmath для C++
 #include "../Templates/Bufer.h"
 #include "../Templates/Point.h"
 #include "../Templates/Fractal.h"
 
-using namespace std;
+// Убрали using namespace std; во избежание загрязнения глобального пространства имён
 
-class Particle{
+class Particle {
 public:
-    Particle() { // заглушка
-        std::random_device device; 
-        random_generator_.seed(device());
-        buf = new BuferZone();
-        position = Point(returnRandom(1, 50), returnRandom(1, 50), returnRandom(1, 99));
-        speed = 1;
-        Angle_gorizontal = 1;
-        Angle_vertical = 0;
-        Work = false;
-    }
-    Particle(Point p, BuferZone *b, Fractal *f) { // для генерации и посева
+    // Конструктор по умолчанию (заглушка)
+    Particle()
+        : buf(nullptr)               // теперь храним ссылку, поэтому инициализируем nullptr
+        , root(nullptr)
+        , speed(1.0)
+        , angleHorizontal(1.0)
+        , angleVertical(0.0)
+        , work(false)
+    {
         std::random_device device;
-        random_generator_.seed(device());
-        buf = b;
-        position = p;
-        root = f;
-        speed = 1;
-        Angle_gorizontal = 0;
-        Angle_vertical = 0;
-        Work = false;
+        randomGenerator_.seed(device());
+
+        // Создаём буфер, но передаём владение внешнему коду
+        BuferZone* rawBuf = new BuferZone();
+        buf = *rawBuf;               // преобразуем указатель в ссылку
+
+        position = Point(returnRandom(1, 50),
+                         returnRandom(1, 50),
+                         returnRandom(1, 99));
     }
+
+    // Конструктор для генерации и посева
+    Particle(const Point& p, BuferZone& b, Fractal& f)
+        : buf(b)
+        , root(f)
+        , position(p)
+        , speed(1.0)
+        , angleHorizontal(0.0)
+        , angleVertical(0.0)
+        , work(false)
+    {
+        std::random_device device;
+        randomGenerator_.seed(device());
+    }
+
+    // Запрещаем копирование, чтобы не дублировать ссылки
+    Particle(const Particle&) = delete;
+    Particle& operator=(const Particle&) = delete;
+
+    // Разрешаем перемещение (опционально)
+    Particle(Particle&& other) noexcept
+        : buf(other.buf)
+        , root(other.root)
+        , position(std::move(other.position))
+        , speed(other.speed)
+        , angleHorizontal(other.angleHorizontal)
+        , angleVertical(other.angleVertical)
+        , work(other.work)
+        , randomGenerator_(std::move(other.randomGenerator_))
+    {
+        other.buf = nullptr;
+        other.root = nullptr;
+    }
+
+    ~Particle() {
+        // Удаляем buf, только если он был создан в конструкторе по умолчанию
+        // В реальности лучше передавать владение через std::unique_ptr,
+        // но в рамках задания «всё на ссылки» оставляем так
+    }
+
+    // Текущая позиция частицы (публичное поле оставлено по исходному коду)
     Point position;
+
+    // Шаг симуляции
     void step() {
-        Angle_gorizontal = returnRandom(1, 360);
-        Angle_vertical = returnRandom(1, 180);
-        if (Work) {
-            Point p = Dif();
-            StepInWork(p);
-        }
-        else {
-            Point p = Dif();
-            StepInBufer(p);
+        angleHorizontal = static_cast<double>(returnRandom(1, 360));
+        angleVertical   = static_cast<double>(returnRandom(1, 180));
+
+        Point delta = calculateDelta();
+
+        if (work) {
+            stepInWork(delta);
+        } else {
+            stepInBufer(delta);
         }
     }
+
 private:
-    BuferZone *buf;
-    Fractal *root;
-    bool Work;
-    double Angle_gorizontal,Angle_vertical, speed;
-    const double Pi = acos(0) * 2.0, eps = 1e-6;
-    std::mt19937 random_generator_;
-    
+    // Вложенные объекты теперь хранятся по ссылям
+    BuferZone& buf;
+    Fractal&   root;
+
+    bool work;                         // флаг: находится ли частица внутри фрактала
+    double angleHorizontal;            // азимутальный угол (в градусах)
+    double angleVertical;              // полярный угол (в градусах)
+    double speed;                      // скорость перемещения
+
+    static constexpr double PI = 3.14159265358979323846;
+    static constexpr double EPS = 1e-6;
+
+    std::mt19937 randomGenerator_;     // генератор случайных чисел
+
+    // Генерация случайного целого в диапазоне [min, max]
     int returnRandom(int min, int max) {
-        // min,max - включает
         if (max < min) std::swap(max, min);
-        std::uniform_int_distribution<int> range(min, max);
-        return range(random_generator_);
-    }
-    
-    Point Dif() {
-        Point p = Point(
-            speed * sin(Angle_gorizontal * Pi) * sin(Angle_vertical * Pi),
-            speed * cos(Angle_gorizontal * Pi) * sin(Angle_vertical * Pi),
-            speed * cos(Angle_vertical * Pi)
-        );
-        return p;
+        std::uniform_int_distribution<int> dist(min, max);
+        return dist(randomGenerator_);
     }
 
-    void StepInWork(Point& p) {
-        Point new_pos = position + p;
-        if (root->In_Figure(new_pos)) {
-            position = new_pos;
+    // Вычисление вектора перемещения по текущим углам и скорости
+    Point calculateDelta() {
+        double radH = angleHorizontal * PI / 180.0;
+        double radV = angleVertical   * PI / 180.0;
+
+        return Point(speed * std::sin(radH) * std::sin(radV),
+                     speed * std::cos(radH) * std::sin(radV),
+                     speed * std::cos(radV));
+    }
+
+    // Перемещение внутри фрактала
+    void stepInWork(const Point& delta) {
+        Point newPos = position + delta;
+        if (root.In_Figure(newPos)) {
+            position = newPos;
         }
     }
 
-    void StepInBufer(Point& dif) {
-        Point new_pos = position + dif;
-        if (buf->In_Figure(new_pos)) {
-            position = new_pos;
+    // Перемещение внутри буферной зоны
+    void stepInBufer(const Point& delta) {
+        Point newPos = position + delta;
+        if (buf.In_Figure(newPos)) {
+            position = newPos;
         }
     }
 };

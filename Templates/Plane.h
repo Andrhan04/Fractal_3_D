@@ -7,86 +7,84 @@ using namespace std;
 class Plane
 {
 public:
-	Plane() {
-		v1 = new Point();
-		v2 = new Point();
-		p = new Point();
-		a = v1->y * v2->z - v2->y * v1->z;
-		b = -(v1->x * v2->z - v2->x * v1->z);
-		c = v1->x * v2->y - v2->x * v1->y;
-		d = -p->x * a - p->y * b - p->z * c;
-		n = 0;
-	}
+    Plane() : v1(), v2(), refPoint(),
+              a(0), b(0), c(0), d(0), normal() {}
 
-	Plane(Plane &pl, double dif) {
-		//cerr << "CREATE Plane WhITH ||\n";
-		*this = pl;
-		(*this).d -= dif;
-		//cerr << get_info() << endl;
-	}
+    Plane(const Plane& pl, double dif)
+        : v1(pl.v1), v2(pl.v2), refPoint(pl.refPoint),
+          a(pl.a), b(pl.b), c(pl.c), d(pl.d - dif), normal(pl.normal) {}
 
-	Plane(Plane* pl, double dif) {
-		//cerr << "CREATE Plane WhITH || on *\n";
-		v1 = pl->v1;
-		v2 = pl->v2;
-		p = pl->p;
-		a = pl->a;
-		b = pl->b;
-		c = pl->c;
-		d = pl->d - dif;
-		n = pl->n;
-		//cerr << get_info() << endl;
-	}
+    Plane(const Plane* pl, double dif)
+        : v1(pl->v1), v2(pl->v2), refPoint(pl->refPoint),
+          a(pl->a), b(pl->b), c(pl->c), d(pl->d - dif), normal(pl->normal) {}
 
-	Plane(Point& A, Point& B, Point& C) {
-		v1 = (B - A).toPointer();
-		v2 = (C - A).toPointer();
-		p = &A;
-		a = v1->y * v2->z - v2->y * v1->z;
-		b = -(v1->x * v2->z - v2->x * v1->z);
-		c = (*v1).x * (*v2).y - (*v2).x * (*v1).y;
-		d = -p->x * a - p->y * b - p->z * c;
-		n = new Point(a, b, c);
-		d /= n->len();
-		n->norm();
-		a = n->x;
-		b = n->y;
-		c = n->z;
-	}
-	Plane(Point* A, Point* B, Point* C) {
-		v1 = (*B - *A).toPointer();
-		v2 = (*C - *A).toPointer();
-		p = A;
-		a = v1->y * v2->z - v2->y * v1->z;
-		b = -(v1->x * v2->z - v2->x * v1->z);
-		c = v1->x * v2->y - v2->x * v1->y;
-		d = -p->x * a - p->y * b - p->z * c;
-		n = new Point(a, b, c);
-		d /= n->len();
-		n->norm();
-		a = n->x;
-		b = n->y;
-		c = n->z;
-	}
-	string get_info() {
-		return to_string(a) + "x + (" + to_string(b) + ")y + (" + to_string(c) + ")z + (" + to_string(d) + ") = 0\n";
-	}
-	double Distance(Point& p) {
-		//cerr << "Count Distance to Plane " << get_info();
-		return a * p.x + b * p.y + c * p.z + d;
-	}
-	bool In_plane(Point& p) {
-		//cerr << "Check point in Plane\n";
-		return abs(a * p.x + b * p.y + c * p.z + d) <= eps;
-	}
-	Plane operator = (const Plane& p) {
-		return p;
-	}
-	Point *v1;
-	Point *v2;
-	Point *n;
-	Point *p;
-	double a, b, c, d;
+    Plane(const Point& A, const Point& B, const Point& C)
+        : refPoint(A)
+    {
+        Point edge1 = B - A;
+        Point edge2 = C - A;
+
+        v1 = edge1; v1.norm();
+        v2 = edge2; v2.norm();
+
+        normal = edge1.cross(edge2);
+        normal.norm();
+
+        a = normal.x;
+        b = normal.y;
+        c = normal.z;
+
+        d = -normal.dot(refPoint);
+    }
+
+    Plane(const Point* A, const Point* B, const Point* C)
+        : Plane(*A, *B, *C) {}
+
+    double Distance(const Point& p) const
+    {
+        return a * p.x + b * p.y + c * p.z + d;
+    }
+
+    bool In_plane(const Point& p) const
+    {
+        return std::abs(Distance(p)) <= eps;
+    }
+
+    // Оператор присваивания
+    Plane& operator=(const Plane& rhs)
+    {
+        if (this != &rhs)
+        {
+            v1       = rhs.v1;
+            v2       = rhs.v2;
+            refPoint = rhs.refPoint;
+            normal   = rhs.normal;
+            a = rhs.a; b = rhs.b; c = rhs.c; d = rhs.d;
+        }
+        return *this;
+    }
+
+    // Публичный доступ только для чтения к геометрическим данным
+    const Point& getV1()       const { return v1; }
+    const Point& getV2()       const { return v2; }
+    const Point& getNormal()   const { return normal; }
+    const Point& getRefPoint() const { return refPoint; }
+    double getA() const { return a; }
+    double getB() const { return b; }
+    double getC() const { return c; }
+    double getD() const { return d; }
+
 private:
-	const double eps = 1e-6;
+    Point v1;        // нормализованный первый реберный вектор
+    Point v2;        // нормализованный второй реберный вектор
+    Point normal;    // нормализованный вектор нормали
+    Point refPoint;  // опорная точка, лежащая на плоскости
+    double a, b, c, d; // коэффициенты уравнения плоскости: ax + by + cz + d = 0
+    static constexpr double eps = 1e-6;
+
+    friend std::ostream& operator<<(std::ostream& os, const Plane& pl)
+    {
+        os << pl.a << "x + (" << pl.b << ")y + (" << pl.c << ")z + (" << pl.d << ") = 0\n";
+        return os;
+    }
 };

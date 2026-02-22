@@ -11,85 +11,102 @@ class Figure{ // Окружность
 public:
 	int id = 0;
 //-------------------------------------------------------------------------------------------------------
-	string get_param() { // Информация о окружности
-		return "( x - " + std::to_string(O->x) + ")^2 + " + "( y - " + std::to_string(O->y) + ")^2 + " + "( z - " + std::to_string(O->z) + ")^2 = " + std::to_string(r) + "^2\n\tPlane: " + p->get_info();
+friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
+		os << "( x - " << fig.O->x << ")^2 + "
+		   << "( y - " << fig.O->y << ")^2 + "
+		   << "( z - " << fig.O->z << ")^2 = "
+		   << fig.r << "^2\n\tPlane: " << *fig.p;
+		return os;
 	}
 //--------------------------------------------------------------------------------------------------------
-	Figure(Point pt, double range) { // Построение окружности || оси OZ с центром O и радиусом range
-		O = &pt;
+	// Конструктор: окружность в плоскости Z=0 с центром pt и радиусом range
+	Figure(const Point& pt, double range) {
+		O = new Point(pt);                 // создаём копию точки
 		Point my_point_1 = Point(1, 0, 0) + pt;
 		Point my_point_2 = Point(0, 1, 0) + pt;
 		p = new Plane(pt, my_point_1, my_point_2);
 		r = range;
 	}
-	Figure(Point *pt, double range) { // Построение окружности || оси OZ с центром O и радиусом range
-		O = pt;
-		Point my_point_1 = Point(1, 0, 0) + pt;
-		Point my_point_2 = Point(0, 1, 0) + pt;
+
+	// Конструктор: то же, но принимает указатель
+	Figure(const Point* pt, double range) {
+		O = new Point(*pt);               // создаём копию
+		Point my_point_1 = Point(1, 0, 0) + *pt;
+		Point my_point_2 = Point(0, 1, 0) + *pt;
+		cout << "IN CREATE " << *O << endl;
+		cout << "IN CREATE HELP POINT " << my_point_1 << endl;
+		cout << "IN CREATE HELP POINT " << my_point_2 << endl;
 		p = new Plane(*pt, my_point_1, my_point_2);
 		r = range;
+		cout << "IN CREATE " << *this << endl;
 	}
 //--------------------------------------------------------------------------------------------------------
-	Figure() { // Заглушка на построение окружности 
-		// On default || OZ and Range = 10 with O = (0, 0, 0)
-		O = new Point();
-		////cerr << "CREATE O\n";
+	// Конструктор по умолчанию: окружность в плоскости Z=0, центр (0,0,0), радиус 10
+	Figure() {
+		O = new Point();                    // центр в начале координат
 		Point my_point_1 = Point(1, 0, 0);
 		Point my_point_2 = Point(0, 1, 0);
 		p = new Plane(*O, my_point_1, my_point_2);
-		////cerr << "CREATE Plane\n";
 		r = 10;
-		////cerr << "CREATE Figure\n";
 	}
 //--------------------------------------------------------------------------------------------------------
-	Figure(Plane &new_plane, double &new_range, Point& pt) {
-		O = &pt;
-		p = &new_plane;
+	// Конструктор: окружность в заданной плоскости new_plane с центром pt и радиусом new_range
+	Figure(const Plane& new_plane, double new_range, const Point& pt) {
+		O = new Point(pt);                  // копируем точку
+		p = new Plane(new_plane);           // копируем плоскость
 		r = new_range;
 	}
 //--------------------------------------------------------------------------------------------------------------------------
-	Figure(Figure& f, double dif) {// Построение окружности || другой окружности 
-		//cerr << "CREATE FIGURE || oter Figure\n";
+	// Конструктор копирования со смещением по Z на dif
+	Figure(const Figure& f, double dif) {
 		O = new Point(f.O->x, f.O->y, f.O->z + dif);
-
-
-		//std::cout << Point(f->O->x, f->O->y, f->O->z + dif)->Info();
-		std::cout << O->Info();
-		p = new Plane(f.p, dif);
+		cout << O->Info();
+		p = new Plane(*f.p, dif);           // смещаем плоскость
 		r = f.r;
 	}
-	Figure(Figure* f, double dif) {// Построение окружности || другой окружности 
-		//cerr << "CREATE FIGURE || oter Figure\n";
+
+	// Конструктор копирования со смещением по Z на dif (принимает указатель)
+	Figure(const Figure* f, double dif) {
 		O = new Point(f->O->x, f->O->y, f->O->z + dif);
-		//cout << O->Info();
-		p = new Plane(f->p, dif);
+		p = new Plane(*f->p, dif);
 		r = f->r;
+		cout << "IN CREATE " << *this << endl;
 	}
 //--------------------------------------------------------------------------------------------------------------------------
-	bool In_Figure(Point& pt) {
+	// Проверка: лежит ли точка pt внутри окружности (в плоскости и в пределах радиуса)
+	bool In_Figure(const Point& pt) {
 		return (*O - pt).len() <= r && p->In_plane(pt);
 	}
 //--------------------------------------------------------------------------------------------------------------------------
-	double Dist(Point& pt) {
-		//cerr << "Find dist to " << get_param() << endl;
+	// Расстояние от точки pt до окружности
+	double Dist(const Point& pt) {
 		if (p->In_plane(pt)) {
-			//cerr << "In Plane";
 			return std::max(0.0, (*O - pt).len() - r);
-		}
-		else {
-			//cerr << "NOT in Plane\n";
+		} else {
 			return p->Distance(pt);
 		}
 	}
-	Figure operator = (const Figure& f) {
-		O = f.O;
-		p = f.p;
-		r = f.r;
-		return f;
+//--------------------------------------------------------------------------------------------------------------------------
+	// Оператор присваивания: копируем данные
+	Figure& operator=(const Figure& f) {
+		if (this != &f) {                   // защита от самоприсваивания
+			delete O;                       // освобождаем старую память
+			delete p;
+			O = new Point(*f.O);            // копируем точку
+			p = new Plane(*f.p);            // копируем плоскость
+			r = f.r;
+		}
+		return *this;
 	}
-	Point *O;
-	Plane *p;
-	double r;
+//--------------------------------------------------------------------------------------------------------------------------
+	// Деструктор: освобождаем динамическую память
+	~Figure() {
+		delete O;
+		delete p;
+	}
+//--------------------------------------------------------------------------------------------------------------------------
 private:
-
+	Point* O;   // центр окружности
+	Plane* p;   // плоскость, в которой лежит окружность
+	double r;   // радиус
 };

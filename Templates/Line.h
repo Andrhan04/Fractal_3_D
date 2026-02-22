@@ -3,18 +3,27 @@
 
 class Line {
 private:
-	Point begin;
-	Point end;
-	Point vec;
+    // Храним объекты Point по ссылке (указатели)
+    Point* begin;  // Начальная точка отрезка
+    Point* end;    // Конечная точка отрезка
+    Point* vec;    // Вектор направления отрезка (end - begin)
 public:
-	Line() {
-		begin = Point(0, 0, 0);
-		end = Point(100, 100, 100);
-		vec = end - begin;
-	}
-	Line(Point b, Point e) {
-		begin = b;
-		end = e;
-		vec = end - begin;
-	}
+    // Конструктор по умолчанию: создаём точки в динамической памяти
+    Line() {
+        begin = new Point(0, 0, 0);   // Начало в (0, 0, 0)
+        end   = new Point(100, 100, 100);  // Конец в (100, 100, 100)
+        vec   = new Point(*end - *begin);  // Вычисляем вектор
+    }
+
+    // Конструктор с параметрами: принимаем ссылки на Point
+    Line(Point& b, Point& e) {
+        begin = &b;  // Сохраняем адрес начальной точки
+        end   = &e;  // Сохраняем адрес конечной точки
+        vec   = new Point(e - b);  // Создаём новый вектор
+    }
+
+    // Деструктор: освобождаем выделенную память
+    ~Line() {
+        delete vec;  // Удаляем только вектор, т.к. begin и end могут быть внешними объектами
+    }
 };
