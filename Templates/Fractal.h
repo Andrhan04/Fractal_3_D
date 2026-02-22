@@ -20,16 +20,15 @@ public:
 
     // Оператор вывода в поток: выводит обе фигуры
     friend std::ostream& operator<<(std::ostream& os, const Fractal& fr) {
+		if (fr.next != nullptr) os << *fr.next << endl;
         os << "up = " << *fr.up << "\ndown = " << *fr.down;
         return os;
     }
 
     // Проверка, содержится ли точка в фигуре фрактала
     bool In_Figure(Point& p) {
-        // cerr << "Check IS point in Segment in Fractal\n";
         double dist_out_dn = down->Dist(p);
         double dist_out_up = up->Dist(p);
-        // cerr << dist_out_up << ' ' << dist_out_dn << endl;
 
         // Если расстояния до фигур имеют разные знаки, точка между ними
         if (dist_out_dn * dist_out_up <= 0) {

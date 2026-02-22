@@ -16,8 +16,7 @@ public:
 	// Конструктор с заданными фигурами: принимает shared_ptr на верхнюю и нижнюю фигуры
 	BuferZone(shared_ptr<Figure> new_up, shared_ptr<Figure> new_down) 
 		: up(new_up), down(new_down) {
-		//cerr << "DO BuferZone IN 2 PLANE\n";
-		cout << "done BuferZone IN 2 PLANE\n";
+		//cout << "done BuferZone IN 2 PLANE\n";
 	}
 
 	// Оператор вывода в поток: выводит верхнюю и нижнюю фигуры
@@ -26,7 +25,8 @@ public:
 			os << "up = " << *bz.up << "\ndown = " << *bz.down;
 			return os;
 		}
-		catch (...) {
+		catch (const exception& e) {
+			cout << "ERROR IS \n" << e.what() << endl;
 			throw runtime_error("Error in operator << for BuferZone");
 		}
 	}

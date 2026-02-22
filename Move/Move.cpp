@@ -1,118 +1,40 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <memory> 
 #include "..\Templates\Fractal.h"
 #include "..\Templates\Bufer.h"
 #include "..\Templates\Figure.h"
 #include "..\Templates\Point.h"
 #include "..\Templates\json.hpp"
-
+#include "..\Templates\MyReader.h"
 
 using json = nlohmann::json;
 using namespace std;
-string yes = "YES", no = "NO";
-string path_to_config = "..\\Sowing\\Config\\";
 
-bool input_pole(int pole_id, int bufer_id, double size_frac) {
-    string path_to_file_fractal = "..\\Sowing\\Fractal\\Pole_" + to_string(pole_id) + ".txt";
-    ifstream file_fractal(path_to_file_fractal);
-    if (!file_fractal.is_open()) {
-        cerr << "File whith Fractal not open\n";
-        file_fractal.close();
-        return false;
-    }
-    
-    string path_to_file_bufer = "..\\Sowing\\Bufer\\Bufer_" + to_string(bufer_id) + ".txt";
-    ifstream file_bufer(path_to_file_bufer);
-    if (!file_bufer.is_open()) {
-        cerr << "File whith Bufer not open\n";
-        file_fractal.close();
-        file_bufer.close();
-        return false;
-    }
-    
-    cout << "Bufer input\n";
-    vector<Figure* > for_buf;
-    for (double x, y, z; file_bufer >> x >> y >> z;) {
-        cout << x << ' ' << y << ' ' << z << endl;
-        Point *p = new Point(x, y, z);
-        Figure* fig = new Figure(p, size_frac);
-        for_buf.push_back(fig);
-    }
-    BuferZone* buf = new BuferZone(for_buf[1], for_buf[0]);
-    cout << *buf << "Bufer Zone is input" << endl;
+const string yes = "YES";
+const string no = "NO";
+const string path_to_config = "..\\Sowing\\Config\\";
 
-    vector<Figure* > for_frctal;
-    for (double x, y, z; file_fractal >> x >> y >> z;) {
-        cout << x << ' ' << y << ' ' << z << endl;
-        Point* p = new Point(x, y, z);
-        Figure* fig = new Figure(p, size_frac);
-        for_frctal.push_back(fig);
+// Функция читает конфигурационный JSON и вызывает input_pole
+void input(int conf_id) {
+	MyReader reader;
+    json j = reader.read_config(conf_id);
+    cout << j.dump(4) << '\n';
+    // Проверка обязательных полей
+    if (!j.contains("Fractal") || !j.contains("Bufer") || !j.contains("Size")) {
+		throw runtime_error("Invalid JSON configuration: missing required fields");
     }
+	double size = j["Size"];
+	Fractal* fractal = reader.read_fractal(j["Fractal"], size);
+	BuferZone* bufer = reader.read_bufer(j["Bufer"], size);
 
-    Fractal* root = nullptr;
-    Fractal* mem = nullptr;
-    for (int i = 1; i < for_frctal.size(); i++) {
-        Fractal* f = new Fractal(for_frctal[i-1], for_frctal[i]);
-        if (root == nullptr) {
-            root = f;
-            mem = f;
-        }
-        else {
-            f->prev = root;
-            root->next = f;
-            root = root->next;
-        }
-        cout << *f << endl;
-    }
-
-
-    file_fractal.close();
-    file_bufer.close();
-    return true;
+	cout << "Fractal:\n" << *fractal << "\nBufer:\n" << *bufer << "\nSize: " << size << endl;
 }
 
-bool input(int conf_id) {
-    ifstream f(path_to_config + "Conf_" + to_string(conf_id) + ".json");
-    //cout << (f.is_open() ? yes : no) << endl;
-    if (f.is_open()) {
-        json j;
-        try{
-            f >> j;
-            cout << j << endl;
-            input_pole(j["Fractal"], j["Bufer"], j["Size"]);
+int main() {
+    input(0);
 
-
-            return true;
-        }
-        catch (const std::exception&){
-            cout << "Failed read json" << endl;
-            return false;
-        }
-    }
-    else {
-        cout << "Failed input config\n" << path_to_config + "Config_" + to_string(conf_id) + ".json  " << "not open";
-        return false;
-    }
-}
-
-
-int main(){
-    if (input(0)) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
-/*
-// Test Fractal
-    cout << "-------------------------------------------------------------\n\tFractal\n" << endl;
-    Fractal frac = Fractal();
-    cout << frac << endl;
-    cout << "----------------------------------------------------------" << "\nPoint Chek\n";
-    Point *p = new Point(0, 0, -100);
-    cout << "CREATE " << p->Info() << endl;
-    cout << (frac.In_Figure(*p) ? yes : no) << endl;
-*/
     return 0;
 }

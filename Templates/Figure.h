@@ -23,7 +23,7 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 	// Конструктор: окружность в плоскости Z=0 с центром pt и радиусом range
 	Figure(const Point& pt, double range) {
 		O = new Point(pt);                 // создаём копию точки
-		Point my_point_1 = Point(1, 0, 0) + pt;
+		Point my_point_1 = Point(0, 0, 1) + pt;
 		Point my_point_2 = Point(0, 1, 0) + pt;
 		p = new Plane(pt, my_point_1, my_point_2);
 		r = range;
@@ -34,18 +34,14 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 		O = new Point(*pt);               // создаём копию
 		Point my_point_1 = Point(0, 0, 1) + *pt;
 		Point my_point_2 = Point(0, 1, 0) + *pt;
-		cout << "IN CREATE " << *O << endl;
-		cout << "IN CREATE HELP POINT " << my_point_1 << endl;
-		cout << "IN CREATE HELP POINT " << my_point_2 << endl;
 		p = new Plane(*pt, my_point_1, my_point_2);
 		r = range;
-		cout << "IN CREATE " << *this << endl;
 	}
 //--------------------------------------------------------------------------------------------------------
 	// Конструктор по умолчанию: окружность в плоскости Z=0, центр (0,0,0), радиус 10
 	Figure() {
 		O = new Point();                    // центр в начале координат
-		Point my_point_1 = Point(1, 0, 0);
+		Point my_point_1 = Point(0, 0, 1);
 		Point my_point_2 = Point(0, 1, 0);
 		p = new Plane(*O, my_point_1, my_point_2);
 		r = 10;
@@ -61,7 +57,6 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 	// Конструктор копирования со смещением по Z на dif
 	Figure(const Figure& f, double dif) {
 		O = new Point(f.O->x, f.O->y, f.O->z + dif);
-		cout << O->Info();
 		p = new Plane(*f.p, dif);           // смещаем плоскость
 		r = f.r;
 	}
@@ -71,7 +66,6 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 		O = new Point(f->O->x, f->O->y, f->O->z + dif);
 		p = new Plane(*f->p, dif);
 		r = f->r;
-		cout << "IN CREATE " << *this << endl;
 	}
 	// Конструктор копирования со смещением по Z на dif (принимает shared_ptr)
 	Figure(const std::shared_ptr<Figure>& f, double dif) {

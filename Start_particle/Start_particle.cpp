@@ -8,6 +8,7 @@
 #include "..\Templates\Bufer.h"
 #include "..\Templates\Point.h" 
 #include "..\Templates\json.hpp"
+#include "..\Templates\MyReader.h"
 
 using namespace std;
 using namespace filesystem;
@@ -46,44 +47,8 @@ int get_new_id(const string& folder) {
 
 // Генерируем заданное количество частиц в буферной зоне
 bool generate_particle(int n, int sz, int id_buf, int id) {
-    string path_to_file_bufer = "..\\Sowing\\Bufer\\Bufer_" + to_string(id_buf) + ".txt";
-    ifstream file_bufer(path_to_file_bufer);
-
-    double mn_x = 0, mx_x = 0, curr_y = 0;
-    double buf_x1, buf_x2, buf_y1, buf_y2, buf_z1, buf_z2;
-
-    // Считываем координаты буферной зоны
-    if (!file_bufer.is_open()) {
-        cerr << "Failed to open buffer file\n";
-        throw runtime_error("Failed to open buffer file");
-    }
-
-    file_bufer >> buf_x1 >> buf_y1 >> buf_z1 >> buf_x2 >> buf_y2 >> buf_z2;
-    mn_x = buf_x1;
-    mx_x = buf_x2;
-    curr_y = buf_y1;
-    cout << "Buffer loaded" << endl;
-    file_bufer.close();
-
-    // Повторно открываем файл для чтения точек
-    file_bufer.open(path_to_file_bufer);
-    vector<Figure*> for_buf;
-    double x, y, z;
-    while (file_bufer >> x >> y >> z) {
-        Point* p = new Point(x, y, z);
-        Figure* fig = new Figure(p, sz);
-        for_buf.push_back(fig);
-    }
-    file_bufer.close();
-
-    // Создаём буферную зону по двум точкам
-    if (for_buf.size() < 2) {
-        throw runtime_error("Not enough points in buffer file");
-    }
-    BuferZone* buf = new BuferZone(
-        std::make_shared<Figure>(*for_buf[1]),
-        std::make_shared<Figure>(*for_buf[0])
-    );
+	MyReader reader;
+	BuferZone* buf = reader.read_bufer(id_buf, sz);
     cout << *buf;
     cout << "Buffer zone created" << endl;
 
@@ -118,10 +83,6 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
         if (attempts == n * 4 && particles.size() * 3 < static_cast<size_t>(n)) {
             if (outsideCount > 10) {
                 cout << "Generated outside zone: " << outsideCount << endl;
-                cout << "mn_x = " << mn_x << endl;
-                cout << "mx_x = " << mx_x << endl;
-                cout << "curr_y = " << curr_y << endl;
-                cout << "sz = " << sz << endl;
             }
             throw runtime_error("Failed to generate the required number of particles");
         }
@@ -148,7 +109,6 @@ bool generate_particle(int n, int sz, int id_buf, int id) {
 }
 
 int main() {
-    setlocale(LC_ALL, "");
     // Получаем свободные ID для конфигурации и частиц
     int id_confid = get_new_id("..\\Sowing\\Config");
     int id_sowing = get_new_id("..\\Sowing\\Particle");
