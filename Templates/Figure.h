@@ -4,6 +4,7 @@
 #include "Plane.h"
 #include <iostream>
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -31,7 +32,7 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 	// Конструктор: то же, но принимает указатель
 	Figure(const Point* pt, double range) {
 		O = new Point(*pt);               // создаём копию
-		Point my_point_1 = Point(1, 0, 0) + *pt;
+		Point my_point_1 = Point(0, 0, 1) + *pt;
 		Point my_point_2 = Point(0, 1, 0) + *pt;
 		cout << "IN CREATE " << *O << endl;
 		cout << "IN CREATE HELP POINT " << my_point_1 << endl;
@@ -72,6 +73,12 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 		r = f->r;
 		cout << "IN CREATE " << *this << endl;
 	}
+	// Конструктор копирования со смещением по Z на dif (принимает shared_ptr)
+	Figure(const std::shared_ptr<Figure>& f, double dif) {
+		O = new Point(f->O->x, f->O->y, f->O->z + dif);
+		p = new Plane(*f->p, dif);
+		r = f->r;
+	}
 //--------------------------------------------------------------------------------------------------------------------------
 	// Проверка: лежит ли точка pt внутри окружности (в плоскости и в пределах радиуса)
 	bool In_Figure(const Point& pt) {
@@ -105,8 +112,8 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 		delete p;
 	}
 //--------------------------------------------------------------------------------------------------------------------------
-private:
 	Point* O;   // центр окружности
 	Plane* p;   // плоскость, в которой лежит окружность
 	double r;   // радиус
+private:
 };

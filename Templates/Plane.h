@@ -37,8 +37,8 @@ public:
         a = normal->x;
         b = normal->y;
         c = normal->z;
-
         d = -normal->dot(*refPoint);
+
     }
 
     // Конструктор по указателям на три точки
@@ -110,5 +110,4 @@ private:
         os << pl.a << "x + (" << pl.b << ")y + (" << pl.c << ")z + (" << pl.d << ") = 0\n";
         return os;
     }
-};
 };

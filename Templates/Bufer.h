@@ -57,7 +57,7 @@ public:
 
 	// Генерация случайной точки внутри буферной зоны
 	Point generate_point(){
-		int dist = down->Dist(*up->O);
+		int dist = up->Dist(*down->O);
 		if (dist < 1) {
 			throw runtime_error("Too small distance between planes");
 		}

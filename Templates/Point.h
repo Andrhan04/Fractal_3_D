@@ -35,7 +35,7 @@ public:
     /** @brief Перегрузка вывода в поток */
     friend std::ostream& operator<<(std::ostream& os, const Point& p)
     {
-        os << "Point: " << p.x << " " << p.y << " " << p.z << "\n";
+        os << p.x << " " << p.y << " " << p.z << "\n";
         return os;
     }
 
@@ -66,7 +66,7 @@ public:
     Point cross(const Point& p) const
     {
         return Point(y * p.z - z * p.y,
-                     z * p.x - x * p.z,   // убираем лишний минус
+                     z * p.x - x * p.z,
                      x * p.y - y * p.x);
     }
 
