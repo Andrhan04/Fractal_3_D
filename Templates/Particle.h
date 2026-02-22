@@ -5,14 +5,13 @@
 #include "../Templates/Point.h"
 #include "../Templates/Fractal.h"
 
-// Убрали using namespace std; во избежание загрязнения глобального пространства имён
-
+// Убрали using namespace std; во избежание загрязнения глобального пространства имёв
 class Particle {
 public:
     // Конструктор по умолчанию (заглушка)
     Particle()
-        : buf(nullptr)               // теперь храним ссылку, поэтому инициализируем nullptr
-        , root(nullptr)
+        : buf(nullptr) // создаём временный объект и сразу инициализируем ссылку
+        , root(nullptr)  // аналогично для root, если требуется ссылка на Fractal
         , speed(1.0)
         , angleHorizontal(1.0)
         , angleVertical(0.0)
@@ -21,10 +20,6 @@ public:
         std::random_device device;
         randomGenerator_.seed(device());
 
-        // Создаём буфер, но передаём владение внешнему коду
-        BuferZone* rawBuf = new BuferZone();
-        buf = *rawBuf;               // преобразуем указатель в ссылку
-
         position = Point(returnRandom(1, 50),
                          returnRandom(1, 50),
                          returnRandom(1, 99));
@@ -32,6 +27,19 @@ public:
 
     // Конструктор для генерации и посева
     Particle(const Point& p, BuferZone& b, Fractal& f)
+        : buf(& b)
+        , root(& f)
+        , position(p)
+        , speed(1.0)
+        , angleHorizontal(0.0)
+        , angleVertical(0.0)
+        , work(false)
+    {
+        std::random_device device;
+        randomGenerator_.seed(device());
+    }
+
+    Particle(const Point& p, BuferZone* b, Fractal* f)
         : buf(b)
         , root(f)
         , position(p)
@@ -59,8 +67,9 @@ public:
         , work(other.work)
         , randomGenerator_(std::move(other.randomGenerator_))
     {
+        // Ссылку нельзя присвоить nullptr, поэтому заменяем на временный объект
         other.buf = nullptr;
-        other.root = nullptr;
+        other.root = nullptr; // root теперь ссылка на временный Fractal
     }
 
     ~Particle() {
@@ -86,10 +95,16 @@ public:
         }
     }
 
+    void check() {
+		cout << "Particle position: " << position;
+		cout << "Fractal" << *root;
+		cout << "Bufer" << *buf;
+    }
+
 private:
     // Вложенные объекты теперь хранятся по ссылям
-    BuferZone& buf;
-    Fractal&   root;
+    BuferZone *buf;
+    Fractal   *root;
 
     bool work;                         // флаг: находится ли частица внутри фрактала
     double angleHorizontal;            // азимутальный угол (в градусах)
@@ -121,7 +136,7 @@ private:
     // Перемещение внутри фрактала
     void stepInWork(const Point& delta) {
         Point newPos = position + delta;
-        if (root.In_Figure(newPos)) {
+        if (root->In_Figure(newPos)) {
             position = newPos;
         }
     }
@@ -129,7 +144,7 @@ private:
     // Перемещение внутри буферной зоны
     void stepInBufer(const Point& delta) {
         Point newPos = position + delta;
-        if (buf.In_Figure(newPos)) {
+        if (buf->In_Figure(newPos)) {
             position = newPos;
         }
     }

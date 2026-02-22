@@ -4,3 +4,4 @@
 # Не игнорировать файлы .cpp
 !*.cpp
 !.gitignore
+!README.md

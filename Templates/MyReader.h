@@ -1,9 +1,11 @@
 #pragma once
 #include <fstream>
 #include <string>
+#include <vector>
 #include "json.hpp"
 #include "..\Templates\Bufer.h"
 #include "..\Templates\Fractal.h"
+#include "..\Templates\Particle.h"
 
 using json = nlohmann::json;
 using namespace std;
@@ -15,13 +17,34 @@ private:
     string path_to_file_fractal; // базовый путь к файлам фракталов
     string path_to_file_bufer;   // базовый путь к файлам буферов
     string path_to_config;       // базовый путь к конфигурационным файлам
+	string path_to_particles;    // базовый путь к файлам с данными частиц
 public:
     // Конструктор по умолчанию: инициализирует пути к каталогам данных
     MyReader() {
 		path_to_file_fractal = "..\\Sowing\\Fractal\\Pole_";
 		path_to_file_bufer = "..\\Sowing\\Bufer\\Bufer_";
 		path_to_config = "..\\Sowing\\Config\\Conf_";
+		path_to_particles = "..\\Sowing\\Particle\\points_";
     }
+
+    json StartMove() {
+		string path = "input.json";
+		ifstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("File not is open " + path);
+		}
+		json j;
+		file >> j;
+		file.close();
+        for (auto item: j.items()) {
+			json value = item.value();
+            if (!value.contains("conf_id") || !value.contains("repeat") || !value.contains("steps")) {
+                throw runtime_error("Invalid JSON configuration: missing required fields in " + item.key());
+			}
+		}
+		return j;
+    }
+
 
     // Читает JSON-конфигурацию по заданному идентификатору
     json read_config(int config_id) {
@@ -99,4 +122,19 @@ public:
         }
         return root;
     }
+
+    vector<Particle> read_particles(int id, BuferZone *buf, Fractal *f) {
+        vector<Particle> particles;
+		string path = path_to_particles + to_string(id) + ".txt";
+		ifstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("File not is open " + path);
+		}
+		double x, y, z;
+        while (file >> x >> y >> z) {
+            Point p(x, y, z);
+            particles.emplace_back(p, buf, f);
+		}
+		return particles;
+	}
 };
