@@ -1,8 +1,7 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
-#include <memory>
+#include <omp.h>
 #include "..\Templates\json.hpp"
 #include "..\Templates\MyReader.h"
 #include "..\Templates\Bufer.h"
@@ -45,12 +44,12 @@ void input(int conf_id, vector<Particle>& particles) {
 	}
 }
 
-void programm(int steps, int conf_id, int exp_id) {
+json programm(int steps, int conf_id, int exp_id) {
 	vector<Particle> particles;
 	input(conf_id, particles);
 	if(particles.size() == 0) {
 		cerr << "No particles to simulate." << endl;
-		return;
+		throw runtime_error("No particles to simulate");
 	}
 	int mem_out_bufer = -1;
 	for (int step = 0; step < steps; step++) {
@@ -66,8 +65,8 @@ void programm(int steps, int conf_id, int exp_id) {
 			mem_out_bufer = step;
 		}
 	}
-	MyWriter writer;
-	int id = writer.write_result_experiment(particles);
+	MyWriter* writer = new MyWriter();
+	int id = writer->write_result_experiment(particles);
 
 	json j;
 	j["conf_id"] = conf_id;
@@ -76,13 +75,15 @@ void programm(int steps, int conf_id, int exp_id) {
 	j["particles_count"] = particles.size();
 	j["result"] = id;
 	j["out_bufer"] = mem_out_bufer;
-	writer.write_result_experiment_config(j, exp_id);
+	
 
 	for (auto& i : particles) {
 		if (!i.check()) {
 			cout << "ERROR" << i.position;
 		}
 	}
+
+	return j;
 }
 
 void check_input(int conf_id) {
@@ -97,6 +98,7 @@ void check_input(int conf_id) {
 
 int main() {
 	MyReader reader;
+	MyWriter writer;
 	try {
 		json j = reader.StartMove();
 		for (auto item: j.items()) {
@@ -107,9 +109,15 @@ int main() {
 			int exp_id = value["exp_id"]; // ID эксперимента для сохранения результатов
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
 			//check_input(conf_id);
+			vector<json> results(repeat);
+			#pragma omp parallel for
 			for (int i = 0; i < repeat; i++) {
 				cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
-				programm(steps, conf_id, exp_id);
+				results[i] = programm(steps, conf_id, exp_id);
+			}
+
+			for(auto & res : results) {
+				writer.write_result_experiment_config(res, exp_id);
 			}
 		}
 		return 0;

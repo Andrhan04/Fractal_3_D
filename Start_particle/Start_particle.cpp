@@ -1,9 +1,6 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
-#include <random>
 #include <fstream>
-#include <filesystem>
 #include <vector>
 #include "..\Templates\Bufer.h"
 #include "..\Templates\Point.h" 
@@ -12,7 +9,6 @@
 #include "..\Templates\MyWriter.h"
 
 using namespace std;
-using namespace filesystem;
 using json = nlohmann::json;
 
 // Генерируем заданное количество частиц в буферной зоне

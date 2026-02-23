@@ -1,6 +1,9 @@
 #pragma once
 #include "Point.h"
 #include "Figure.h"
+#include "Generator.h"
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -80,9 +83,9 @@ public:
 		if (radius <= 0.0) {
 			throw runtime_error("Invalid buffer radius");
 		}
-		double rx = x_min + (rand() / (double)RAND_MAX) * (x_max - x_min);
-		double u = rand() / (double)RAND_MAX;
-		double v = rand() / (double)RAND_MAX;
+		double rx = x_min + generator_.get_double(0.0, 1.0) * (x_max - x_min);
+		double u = generator_.get_double(0.0, 1.0);
+		double v = generator_.get_double(0.0, 1.0);
 		double rr = std::sqrt(u) * radius;
 		double phi = 2.0 * 3.14159265358979323846 * v;
 		double cy = down->O->y;
@@ -96,5 +99,6 @@ private:
 	// Используем shared_ptr для автоматического управления памятью и избегания утечек
 	shared_ptr<Figure> up;
 	shared_ptr<Figure> down;
+	Generator generator_;
 };
 

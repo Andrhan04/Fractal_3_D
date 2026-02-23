@@ -1,9 +1,9 @@
 #pragma once
-#include <random>
 #include <cmath>
 #include "../Templates/Bufer.h"
 #include "../Templates/Point.h"
 #include "../Templates/Fractal.h"
+#include "../Templates/Generator.h"
 
 // Убрали using namespace std; во избежание загрязнения глобального пространства имёв
 class Particle {
@@ -17,12 +17,11 @@ public:
         , angleVertical(0.0)
         , work(false)
     {
-        std::random_device device;
-        randomGenerator_.seed(device());
-
-        position = Point(returnRandom(1, 50),
-                         returnRandom(1, 50),
-                         returnRandom(1, 99));
+        position = Point(
+            static_cast<double>(generator_.get_int(1, 50)),
+            static_cast<double>(generator_.get_int(1, 50)),
+            static_cast<double>(generator_.get_int(1, 99))
+        );
     }
 
     // Конструктор для генерации и посева
@@ -35,8 +34,6 @@ public:
         , angleVertical(0.0)
         , work(false)
     {
-        std::random_device device;
-        randomGenerator_.seed(device());
     }
 
     Particle(const Point& p, BuferZone* b, Fractal* f)
@@ -48,8 +45,6 @@ public:
         , angleVertical(0.0)
         , work(false)
     {
-        std::random_device device;
-        randomGenerator_.seed(device());
     }
 
     // Запрещаем копирование, чтобы не дублировать ссылки
@@ -65,7 +60,7 @@ public:
         , angleHorizontal(other.angleHorizontal)
         , angleVertical(other.angleVertical)
         , work(other.work)
-        , randomGenerator_(std::move(other.randomGenerator_))
+        //, randomGenerator_(std::move(other.randomGenerator_))
     {
         other.buf = nullptr;
         other.root = nullptr;
@@ -116,19 +111,12 @@ private:
     static constexpr double PI = 3.14159265358979323846;
     static constexpr double EPS = 1e-6;
 
-    std::mt19937 randomGenerator_;     // генератор случайных чисел
-
-    // Генерация случайного целого в диапазоне [min, max]
-    int returnRandom(int min, int max) {
-        if (max < min) std::swap(max, min);
-        std::uniform_int_distribution<int> dist(min, max);
-        return dist(randomGenerator_);
-    }
+    Generator generator_;
 
     // Вычисление вектора перемещения по случайным углам и скорости
     Point calculateDelta() {
-        double angleH = static_cast<double>(returnRandom(1, 360));
-        double angleV = static_cast<double>(returnRandom(1, 180));
+        double angleH = static_cast<double>(generator_.get_int(1, 360));
+        double angleV = static_cast<double>(generator_.get_int(1, 180));
         double radH = angleH * PI / 180.0;
         double radV = angleV * PI / 180.0;
 
