@@ -4,3 +4,4 @@
 .*
 /Experiments
 /Results
+!.gitignore
