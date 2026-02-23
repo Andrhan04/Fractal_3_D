@@ -24,15 +24,14 @@ def draw_point(color : str, exp_id : int):
         if os.path.isfile(filepath):
             x, y, z = [], [], []
             get_data(x, y, z, filepath)
-            axes.scatter(x, y, z, color=color)
+            axes.scatter(x, y, z, color=color, s=5)
 
-def draw_pole(floder : str, fname : str, color : str):
+def draw_pole(floder : str, fname : str, color : str, radius : int):
     global axes
     if os.path.isdir(floder):
         if fname.lower().endswith(".txt"):
             x, y, z = [], [], []
             get_data(x, y, z, os.path.join(floder, fname))
-            radius = 100
             for i in range(len(x) - 1):
                 # Начальная и конечная точки центров
                 start = np.array([x[i], y[i], z[i]])
@@ -43,19 +42,15 @@ def draw_pole(floder : str, fname : str, color : str):
                 if length == 0:
                     continue
                 axis = axis / length
-                # Ортонормированный базис
-                not_axis = np.array([1, 0, 0])
-                if np.allclose(axis, not_axis) or np.allclose(axis, -not_axis):
-                    not_axis = np.array([0, 1, 0])
-                perp1 = np.cross(axis, not_axis)
-                perp1 = perp1 / np.linalg.norm(perp1)
-                perp2 = np.cross(axis, perp1)
+                # Базис для окружности, перпендикулярной оси OX
+                perp1 = np.array([0, 1, 0])
+                perp2 = np.array([0, 0, 1])
                 # Генерация точек окружности
                 theta = np.linspace(0, 2*np.pi, 16, endpoint=True)
-                circle = np.array([radius * (np.cos(theta)[:, None] * perp1 + np.sin(theta)[:, None] * perp2)])
+                circle = radius * (np.cos(theta)[:, None] * perp1 + np.sin(theta)[:, None] * perp2)
                 # Нижняя и верхняя окружности
-                bottom_circle = start + circle[0]
-                top_circle = end + circle[0]
+                bottom_circle = start + circle
+                top_circle = end + circle
                 # Создание боковых граней
                 verts = []
                 for j in range(len(theta) - 1):
@@ -68,12 +63,15 @@ def draw_pole(floder : str, fname : str, color : str):
                 axes.add_collection3d(Poly3DCollection([bottom_circle], facecolors=color, edgecolor='none', alpha=0.1))
                 # Отрисовка верхнего основания
                 axes.add_collection3d(Poly3DCollection([top_circle], facecolors=color, edgecolor='none', alpha=0.1))
-
+                
 fig = plt.figure()
 axes = fig.add_subplot(projection='3d')
 axes.set_xlabel('x')
 axes.set_ylabel('y')
 axes.set_zlabel('z')
+axes.set_xlim(0, 1000)
+axes.set_ylim(-500, 500)
+axes.set_zlim(-500, 500)
 
 
 with open(file="Draw_figure\\draw_point.json", mode='r') as file:
@@ -83,18 +81,34 @@ with open(file="Draw_figure\\draw_point.json", mode='r') as file:
 
 with open(file=f"Results\\experiment_{exp_id}.json", mode='r') as file:
     data = json.load(file)
-    print(data)
     conf_id = data[try_id]["conf_id"]
     result = data[try_id]["result"]
+    particles_count = data[try_id]["particles_count"]
 
 with open(file=f"Sowing\\Config\\conf_{conf_id}.json", mode='r') as file:
     data = json.load(file)
     Bufer = data["Bufer"]
     Fractal = data["Fractal"]
+    radius = data["Size"]
+    points_start = data["Point"]
+    
+info  = {
+    "exp_id": f"Results\\experiment_{exp_id}.json",
+    "conf_id": f"Sowing\\Config\\conf_{conf_id}.json",
+    "result": f"Experiments\\exp_{result}.txt",
+    "Bufer": f"Sowing\\Bufer\\Bufer_{Bufer}.txt",
+    "Fractal": f"Sowing\\Fractal\\Pole_{Fractal}.txt",
+    "particles_start_position": f"Sowing\\Particle\\points_{points_start}.txt",
+    "Size": radius,
+    "particles_count": particles_count,
+}
 
-draw_pole("Sowing\\Bufer", f"Bufer_{Bufer}.txt", 'r')
-draw_pole("Sowing\\Fractal", f"Pole_{Fractal}.txt", 'b')
-draw_point('g', try_id)
+for key, value in info.items():
+    print(f"{key:<30} : {value}")
+
+draw_pole("Sowing\\Bufer", f"Bufer_{Bufer}.txt", 'r', radius)
+draw_pole("Sowing\\Fractal", f"Pole_{Fractal}.txt", 'b', radius)
+draw_point('g', result)
 
 
 plt.show()
