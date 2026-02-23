@@ -33,16 +33,26 @@ public:
 
 	// Проверка, находится ли точка внутри буферной зоны
 	bool In_Figure(Point& p) {
-		double dist_out_dn = down->Dist(p);
-		double dist_out_up = up->Dist(p);
-		if (dist_out_dn < 0 && dist_out_up > 0) {
-			// Создаём вспомогательную фигуру на основе верхней и расстояния до точки
-			auto help = make_shared<Figure>(up, dist_out_up);
-			return help->In_Figure(p);
+		Point axis = *up->O - *down->O;
+		double axisLenSq = axis.dot(axis);
+		if (axisLenSq > 0.0) {
+			Point fromDown = p - *down->O;
+			double t = fromDown.dot(axis) / axisLenSq;
+			if (t >= 0.0 && t <= 1.0) {
+				Point closest = *down->O + axis * t;
+				double dist = (p - closest).len();
+				double radius = std::min(up->r, down->r);
+				if (dist <= radius) {
+					return true;
+				}
+			}
 		}
 		else {
-			return false;
+			if (up->In_Figure(p) || down->In_Figure(p)) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	// Оператор присваивания: копирует shared_ptr (разделяемое владение)
@@ -56,15 +66,30 @@ public:
 
 	// Генерация случайной точки внутри буферной зоны
 	Point generate_point(){
-		int dist = up->Dist(*down->O);
-		if (dist < 1) {
-			throw runtime_error("Too small distance between planes");
+		if (!up || !down) {
+			throw runtime_error("Buffer zones are not initialized");
 		}
-		auto help = make_shared<Figure>(down, dist);
-		double x = help->O->x + (rand() / (double)RAND_MAX - 0.5) * 2 * help->r;
-		double y = help->O->y + (rand() / (double)RAND_MAX - 0.5) * 2 * help->r;
-		double z = help->O->z + (rand() / (double)RAND_MAX - 0.5) * 2 * help->r;
-		return Point(x, y, z);
+		double x1 = down->O->x;
+		double x2 = up->O->x;
+		double x_min = std::min(x1, x2);
+		double x_max = std::max(x1, x2);
+		if (x_max - x_min <= 0.0) {
+			throw runtime_error("Invalid buffer length along OX");
+		}
+		double radius = std::min(up->r, down->r);
+		if (radius <= 0.0) {
+			throw runtime_error("Invalid buffer radius");
+		}
+		double rx = x_min + (rand() / (double)RAND_MAX) * (x_max - x_min);
+		double u = rand() / (double)RAND_MAX;
+		double v = rand() / (double)RAND_MAX;
+		double rr = std::sqrt(u) * radius;
+		double phi = 2.0 * 3.14159265358979323846 * v;
+		double cy = down->O->y;
+		double cz = down->O->z;
+		double ry = cy + rr * std::cos(phi);
+		double rz = cz + rr * std::sin(phi);
+		return Point(rx, ry, rz);
 	}
 
 private:

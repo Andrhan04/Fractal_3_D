@@ -34,4 +34,11 @@ public:
     int get_int(int mn, int mx) {
         return returnRandom(std::min(mn, mx), std::max(mx, mn));
     }
+    
+	// Публичная функция для получения случайного вещественного числа в диапазоне [mn, mx]
+    double get_double(double mn, double mx) {
+        if (mx < mn) std::swap(mx, mn);  // Обеспечиваем корректный порядок границ
+        std::uniform_real_distribution<double> range(mn, mx);
+        return range(random_generator_);
+	}
 };

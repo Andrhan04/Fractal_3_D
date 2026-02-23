@@ -27,16 +27,26 @@ public:
 
     // Проверка, содержится ли точка в фигуре фрактала
     bool In_Figure(Point& p) {
-        // Проверка попадания точки в цилиндр:
-        // Точка внутри цилиндра, если её проекция лежит между up и down
-        // и расстояние до оси цилиндра меньше радиуса.
-        double distAxis = up->DistAxis(p);   // расстояние до оси цилиндра
-        double hUp = up->Height(p);          // высота по отношению к up
-        double hDown = down->Height(p);      // высота по отношению к down
-
-        // Проверяем, что точка между плоскостями up и down, и внутри радиуса
-        if (hUp * hDown <= 0 && distAxis <= up->r) {
-            return true;
+        Point axis = *up->O - *down->O;
+        double axisLenSq = axis.dot(axis);
+        if (axisLenSq > 0.0) {
+            Point fromDown = p - *down->O;
+            double t = fromDown.dot(axis) / axisLenSq;
+            if (t >= 0.0 && t <= 1.0) {
+                Point closest = *down->O + axis * t;
+                double dist = (p - closest).len();
+                double radius = std::min(up->r, down->r);
+                if (dist <= radius) {
+                    return true;
+                }
+            }
+        } else {
+            if (up->In_Figure(p) || down->In_Figure(p)) {
+                return true;
+            }
+        }
+        if (next != nullptr) {
+            return next->In_Figure(p);
         }
         return false;
     }

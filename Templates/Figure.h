@@ -20,7 +20,7 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 		return os;
 	}
 //--------------------------------------------------------------------------------------------------------
-	// Конструктор: окружность в плоскости Z=0 с центром pt и радиусом range
+	// Конструктор: окружность в плоскости, перпендикулярной оси OX, с центром pt и радиусом range
 	Figure(const Point& pt, double range) {
 		O = new Point(pt);                 // создаём копию точки
 		Point my_point_1 = Point(0, 0, 1) + pt;
@@ -38,7 +38,7 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 		r = range;
 	}
 //--------------------------------------------------------------------------------------------------------
-	// Конструктор по умолчанию: окружность в плоскости Z=0, центр (0,0,0), радиус 10
+	// Конструктор по умолчанию: окружность в плоскости, перпендикулярной оси OX, центр (0,0,0), радиус 10
 	Figure() {
 		O = new Point();                    // центр в начале координат
 		Point my_point_1 = Point(0, 0, 1);
@@ -49,28 +49,37 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 //--------------------------------------------------------------------------------------------------------
 	// Конструктор: окружность в заданной плоскости new_plane с центром pt и радиусом new_range
 	Figure(const Plane& new_plane, double new_range, const Point& pt) {
+		(void)new_plane;
 		O = new Point(pt);                  // копируем точку
-		p = new Plane(new_plane);           // копируем плоскость
+		Point my_point_1 = Point(0, 0, 1) + pt;
+		Point my_point_2 = Point(0, 1, 0) + pt;
+		p = new Plane(pt, my_point_1, my_point_2);
 		r = new_range;
 	}
 //--------------------------------------------------------------------------------------------------------------------------
 	// Конструктор копирования со смещением по Z на dif
 	Figure(const Figure& f, double dif) {
-		O = new Point(f.O->x, f.O->y, f.O->z + dif);
-		p = new Plane(*f.p, dif);           // смещаем плоскость
+		O = new Point(f.O->x + dif, f.O->y, f.O->z);
+		Point my_point_1 = Point(0, 0, 1) + *O;
+		Point my_point_2 = Point(0, 1, 0) + *O;
+		p = new Plane(*O, my_point_1, my_point_2);
 		r = f.r;
 	}
 
 	// Конструктор копирования со смещением по Z на dif (принимает указатель)
 	Figure(const Figure* f, double dif) {
-		O = new Point(f->O->x, f->O->y, f->O->z + dif);
-		p = new Plane(*f->p, dif);
+		O = new Point(f->O->x + dif, f->O->y, f->O->z);
+		Point my_point_1 = Point(0, 0, 1) + *O;
+		Point my_point_2 = Point(0, 1, 0) + *O;
+		p = new Plane(*O, my_point_1, my_point_2);
 		r = f->r;
 	}
 	// Конструктор копирования со смещением по Z на dif (принимает shared_ptr)
 	Figure(const std::shared_ptr<Figure>& f, double dif) {
-		O = new Point(f->O->x, f->O->y, f->O->z + dif);
-		p = new Plane(*f->p, dif);
+		O = new Point(f->O->x + dif, f->O->y, f->O->z);
+		Point my_point_1 = Point(0, 0, 1) + *O;
+		Point my_point_2 = Point(0, 1, 0) + *O;
+		p = new Plane(*O, my_point_1, my_point_2);
 		r = f->r;
 	}
 //--------------------------------------------------------------------------------------------------------------------------
@@ -94,7 +103,9 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 			delete O;                       // освобождаем старую память
 			delete p;
 			O = new Point(*f.O);            // копируем точку
-			p = new Plane(*f.p);            // копируем плоскость
+			Point my_point_1 = Point(0, 0, 1) + *O;
+			Point my_point_2 = Point(0, 1, 0) + *O;
+			p = new Plane(*O, my_point_1, my_point_2);
 			r = f.r;
 		}
 		return *this;
@@ -109,18 +120,5 @@ friend std::ostream& operator<<(std::ostream& os, const Figure& fig) {
 	Point* O;   // центр окружности
 	Plane* p;   // плоскость, в которой лежит окружность
 	double r;   // радиус
-
-	double DistAxis(const Point& pt) {
-		// Вычисляем расстояние от точки до оси окружности (проекция на плоскость)
-		Point toPt = pt - *O;              // вектор от центра к точке
-		Point normal = p->getNormal();     // нормаль к плоскости
-		double distAxis = std::abs(toPt.dot(normal)); // расстояние до оси
-		return distAxis;
-	}
-
-	double Height(const Point& pt) {
-		// Вычисляем высоту точки относительно плоскости окружности
-		return p->Distance(pt);
-	}
 private:
 };

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <set>
 #include <filesystem>
 #include "json.hpp"
 #include "..\Templates\Bufer.h"
@@ -46,7 +47,7 @@ private:
         }
         // Проверяем существование и тип пути
         if (exists(folder) && is_directory(folder)) {
-            int id = 0;
+            set <int> mem;
             // Проходим по всем файлам в директории
             for (const auto& entry : directory_iterator(folder)) {
                 const string name = entry.path().filename().string();
@@ -58,10 +59,13 @@ private:
                     for (size_t i = pos + 1; i < name.size() && isdigit(name[i]); ++i) {
                         curr = curr * 10 + (name[i] - '0');
                     }
-                    // Если нашли такой же ID, увеличиваем счётчик
-                    if (id == curr) {
-                        ++id;
-                    }
+                    mem.insert(curr);
+                }
+            }
+            int id = 0;
+            for (auto i : mem) {
+                if (id == i) {
+                    id++;
                 }
             }
             cout << "Next ID: " << id << endl;

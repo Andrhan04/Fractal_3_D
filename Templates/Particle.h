@@ -61,7 +61,7 @@ public:
         : buf(other.buf)
         , root(other.root)
         , position(std::move(other.position))
-        , speed(other.speed)
+        , speed(1.0)
         , angleHorizontal(other.angleHorizontal)
         , angleVertical(other.angleVertical)
         , work(other.work)
@@ -82,11 +82,7 @@ public:
 
     // Шаг симуляции
     void step() {
-        angleHorizontal = static_cast<double>(returnRandom(1, 360));
-        angleVertical   = static_cast<double>(returnRandom(1, 180));
-
         Point delta = calculateDelta();
-
         if (work) {
             stepInWork(delta);
         } else {
@@ -94,14 +90,18 @@ public:
         }
     }
 
-    void check() {
-        if (buf->In_Figure(position)) {
-			cout << "OK\n";
+    bool check_in_work() {
+        return work;
+	}
+
+    bool check() {
+        if (work) {
+            return (root->In_Figure(position));
         }
         else {
-			cout << "Particle is outside buffer at position: " << position;
+            return(buf->In_Figure(position));
         }
-	}
+    }
 
 private:
     // Вложенные объекты теперь хранятся по ссылям
@@ -125,10 +125,12 @@ private:
         return dist(randomGenerator_);
     }
 
-    // Вычисление вектора перемещения по текущим углам и скорости
+    // Вычисление вектора перемещения по случайным углам и скорости
     Point calculateDelta() {
-        double radH = angleHorizontal * PI / 180.0;
-        double radV = angleVertical   * PI / 180.0;
+        double angleH = static_cast<double>(returnRandom(1, 360));
+        double angleV = static_cast<double>(returnRandom(1, 180));
+        double radH = angleH * PI / 180.0;
+        double radV = angleV * PI / 180.0;
 
         return Point(speed * std::sin(radH) * std::sin(radV),
                      speed * std::cos(radH) * std::sin(radV),
@@ -153,7 +155,7 @@ private:
         else{
             newPos.x += 1;
             if (root->In_Figure(newPos)) {
-				cout << "Particle entered the fractal at position: " << newPos;
+				//cout << "Particle entered the fractal at position: " << newPos;
                 position = newPos;
                 work = true;
             }
