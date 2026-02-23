@@ -110,5 +110,8 @@ draw_pole("Sowing\\Bufer", f"Bufer_{Bufer}.txt", 'r', radius)
 draw_pole("Sowing\\Fractal", f"Pole_{Fractal}.txt", 'b', radius)
 draw_point('g', result)
 
-
+output_dir = f"images/Experiment_{exp_id}/im"
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, f"try_{try_id}.png")
+plt.savefig(output_path)
 plt.show()
