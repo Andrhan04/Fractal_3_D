@@ -28,7 +28,7 @@ private:
                 help += c;
             }
         }
-		cout << path << endl;
+		//cout << path << endl;
         if (filesystem::create_directories(path)) {
             std::cout << "Create" << endl;
         }
@@ -68,7 +68,7 @@ private:
                     id++;
                 }
             }
-            cout << "Next ID: " << id << endl;
+            //cout << "Next ID: " << id << endl;
             return id;
         }
         else {

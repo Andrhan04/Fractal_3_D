@@ -58,9 +58,9 @@ json programm(int steps, int conf_id, int exp_id) {
 			particles[i].step();
 			out = out && particles[i].check_in_work();
 		}
-		if (step % (steps / 100) == 0) {
+		/*if (step % (steps / 100) == 0) {
 			cout << "Complete: " << step / (steps / 100) << endl;
-		}
+		}*/
 		if (out && mem_out_bufer < 0) {
 			mem_out_bufer = step;
 		}
