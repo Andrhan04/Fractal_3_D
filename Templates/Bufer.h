@@ -36,26 +36,38 @@ public:
 
 	// Проверка, находится ли точка внутри буферной зоны
 	bool In_Figure(Point& p) {
-		Point axis = *up->O - *down->O;
-		double axisLenSq = axis.dot(axis);
-		if (axisLenSq > 0.0) {
-			Point fromDown = p - *down->O;
-			double t = fromDown.dot(axis) / axisLenSq;
-			if (t >= 0.0 && t <= 1.0) {
-				Point closest = *down->O + axis * t;
-				double dist = (p - closest).len();
-				double radius = std::min(up->r, down->r);
-				if (dist <= radius) {
-					return true;
-				}
+		const double EPS = 1e-9;
+		double radius = std::min(up->r, down->r);
+		Point a = *down->O;
+		Point b = *up->O;
+		double dx = b.x - a.x;
+		double t = 0.0;
+		if (std::abs(dx) > EPS) {
+			t = (p.x - a.x) / dx;
+			if (t < 0.0 || t > 1.0) {
+				return false;
+			}
+		} else {
+			Point v(b.y - a.y, b.z - a.z, 0.0);
+			double vlen2 = v.y * v.y + v.z * v.z;
+			if (vlen2 > EPS) {
+				Point w(p.y - a.y, p.z - a.z, 0.0);
+				t = (w.y * v.y + w.z * v.z) / vlen2;
+				if (t < 0.0) t = 0.0;
+				if (t > 1.0) t = 1.0;
+			} else {
+				t = 0.0;
+			}
+			if (std::abs(p.x - a.x) > EPS) {
+				return false;
 			}
 		}
-		else {
-			if (up->In_Figure(p) || down->In_Figure(p)) {
-				return true;
-			}
-		}
-		return false;
+		Point center(a.x + (b.x - a.x) * t,
+		             a.y + (b.y - a.y) * t,
+		             a.z + (b.z - a.z) * t);
+		double dy = p.y - center.y;
+		double dz = p.z - center.z;
+		return (dy * dy + dz * dz <= radius * radius + EPS);
 	}
 
 	// Оператор присваивания: копирует shared_ptr (разделяемое владение)
@@ -72,27 +84,36 @@ public:
 		if (!up || !down) {
 			throw runtime_error("Buffer zones are not initialized");
 		}
-		double x1 = down->O->x;
-		double x2 = up->O->x;
-		double x_min = std::min(x1, x2);
-		double x_max = std::max(x1, x2);
-		if (x_max - x_min <= 0.0) {
-			throw runtime_error("Invalid buffer length along OX");
+		Point axis = *up->O - *down->O;
+		double length = axis.len();
+		if (length <= 0.0) {
+			throw runtime_error("Invalid buffer length");
 		}
+		Point dir = axis / length;
 		double radius = std::min(up->r, down->r);
 		if (radius <= 0.0) {
 			throw runtime_error("Invalid buffer radius");
 		}
-		double rx = x_min + generator_.get_double(0.0, 1.0) * (x_max - x_min);
+		Point notAxis;
+		if (std::abs(dir.x) < 0.9) {
+			notAxis = Point(1.0, 0.0, 0.0);
+		}
+		else {
+			notAxis = Point(0.0, 1.0, 0.0);
+		}
+		Point perp1 = dir.cross(notAxis);
+		perp1.norm();
+		Point perp2 = dir.cross(perp1);
+		perp2.norm();
+		double t = generator_.get_double(0.0, length);
+		Point base = *down->O + dir * t;
 		double u = generator_.get_double(0.0, 1.0);
 		double v = generator_.get_double(0.0, 1.0);
 		double rr = std::sqrt(u) * radius;
 		double phi = 2.0 * 3.14159265358979323846 * v;
-		double cy = down->O->y;
-		double cz = down->O->z;
-		double ry = cy + rr * std::cos(phi);
-		double rz = cz + rr * std::sin(phi);
-		return Point(rx, ry, rz);
+		Point offset = perp1 * (rr * std::cos(phi)) + perp2 * (rr * std::sin(phi));
+		Point result = base + offset;
+		return result;
 	}
 
 private:

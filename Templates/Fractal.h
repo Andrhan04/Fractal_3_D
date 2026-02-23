@@ -27,23 +27,41 @@ public:
 
     // Проверка, содержится ли точка в фигуре фрактала
     bool In_Figure(Point& p) {
-        Point axis = *up->O - *down->O;
-        double axisLenSq = axis.dot(axis);
-        if (axisLenSq > 0.0) {
-            Point fromDown = p - *down->O;
-            double t = fromDown.dot(axis) / axisLenSq;
-            if (t >= 0.0 && t <= 1.0) {
-                Point closest = *down->O + axis * t;
-                double dist = (p - closest).len();
-                double radius = std::min(up->r, down->r);
-                if (dist <= radius) {
-                    return true;
-                }
+        const double EPS = 1e-9;
+        double radius = std::min(up->r, down->r);
+        Point a = *down->O;
+        Point b = *up->O;
+        double dx = b.x - a.x;
+        double t = 0.0;
+        if (std::abs(dx) > EPS) {
+            t = (p.x - a.x) / dx;
+            if (t < 0.0 || t > 1.0) {
+                if (next != nullptr) return next->In_Figure(p);
+                return false;
             }
         } else {
-            if (up->In_Figure(p) || down->In_Figure(p)) {
-                return true;
+            Point v(b.y - a.y, b.z - a.z, 0.0);
+            double vlen2 = v.y * v.y + v.z * v.z;
+            if (vlen2 > EPS) {
+                Point w(p.y - a.y, p.z - a.z, 0.0);
+                t = (w.y * v.y + w.z * v.z) / vlen2;
+                if (t < 0.0) t = 0.0;
+                if (t > 1.0) t = 1.0;
+            } else {
+                t = 0.0;
             }
+            if (std::abs(p.x - a.x) > EPS) {
+                if (next != nullptr) return next->In_Figure(p);
+                return false;
+            }
+        }
+        Point center(a.x + (b.x - a.x) * t,
+                     a.y + (b.y - a.y) * t,
+                     a.z + (b.z - a.z) * t);
+        double dy = p.y - center.y;
+        double dz = p.z - center.z;
+        if (dy * dy + dz * dz <= radius * radius + EPS) {
+            return true;
         }
         if (next != nullptr) {
             return next->In_Figure(p);
