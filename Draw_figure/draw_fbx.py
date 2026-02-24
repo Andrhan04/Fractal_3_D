@@ -191,11 +191,11 @@ def export_obj(path, cylinders, points):
         
         material_faces.append((material_name, cylinder_faces))
     
-    # Экспортируем точки (частицы) большего размера
+    # Экспортируем точки (частицы) с уменьшенным радиусом 5
     if points:
-        # Для каждой точки создаем маленькую сферу (октаэдр) чтобы они были заметны
+        # Для каждой точки создаем маленькую сферу (октаэдр)
         for px, py, pz in points:
-            point_radius = 15.0  # Увеличенный размер частиц
+            point_radius = 5.0  # Уменьшенный радиус частиц (было 15)
             base = len(vertices) + 1
             
             # Создаем октаэдр для каждой точки
@@ -268,7 +268,7 @@ def main():
     # Отрисовка с увеличенным размером точек (s=50 вместо 5)
     draw_pole(os.path.join("Sowing", "Bufer"), f"Bufer_{bufer_id}.txt", "r", radius, axes, cylinders, project_root)
     draw_pole(os.path.join("Sowing", "Fractal"), f"Pole_{fractal_id}.txt", "b", radius, axes, cylinders, project_root)
-    draw_point("g", result, axes, points, project_root, point_size=50)
+    draw_point("g", result, axes, points, project_root, point_size=10)
     
     images_dir = os.path.join(project_root, "images", f"Experiment_{exp_id}")
     os.makedirs(images_dir, exist_ok=True)
