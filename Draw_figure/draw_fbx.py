@@ -195,7 +195,7 @@ def export_obj(path, cylinders, points):
     if points:
         # Для каждой точки создаем маленькую сферу (октаэдр)
         for px, py, pz in points:
-            point_radius = 5.0  # Уменьшенный радиус частиц (было 15)
+            point_radius = 10.0  # Уменьшенный радиус частиц (было 15)
             base = len(vertices) + 1
             
             # Создаем октаэдр для каждой точки
