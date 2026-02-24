@@ -30,7 +30,8 @@ private:
         }
 		//cout << path << endl;
         if (filesystem::create_directories(path)) {
-            std::cout << "Create" << endl;
+            //std::cout << "Create" << endl;
+            path += help;
         }
     }
 
@@ -82,6 +83,7 @@ private:
 	string path_to_particles;    // базовый путь к файлам с данными частиц
 	string path_to_save_result_experiment; // базовый путь для сохранения результатов эксперимента
 	string path_to_save_result_experiment_config; // базовый путь для сохранения конфигурации эксперимента
+	string path_to_file_step;     // базовый путь для сохранения данных по шагам симуляции
 public:
     MyWriter() {
 		path_to_file_fractal = "..\\Sowing\\Fractal\\Pole_";
@@ -90,11 +92,24 @@ public:
 		path_to_particles = "..\\Sowing\\Particle\\points_";
 		path_to_save_result_experiment = "..\\Experiments\\exp_";
 		path_to_save_result_experiment_config = "..\\Results\\experiment_";
+		path_to_file_step = "..\\Experiments\\Experiment_";
     }
 
-    int write_result_experiment(const vector<Particle>& particles) {
-		make_path(path_to_save_result_experiment);
-		int exp_id = get_new_id(path_to_save_result_experiment);
+    int get_new_id_try() {
+        make_path(path_to_save_result_experiment);
+        int exp_id = get_new_id(path_to_save_result_experiment);
+        string path = path_to_save_result_experiment + to_string(exp_id) + ".txt";
+        ofstream file(path);
+        if(file.is_open()) {
+            file.close();
+        }
+        else {
+            throw runtime_error("Failed to create file for saving experiment");
+		}
+		return exp_id;
+    }
+
+    void write_result_experiment(const vector<Particle>& particles, int exp_id) {
         string path = path_to_save_result_experiment + to_string(exp_id) + ".txt";
         ofstream file(path);
         if (!file.is_open()) {
@@ -105,7 +120,6 @@ public:
                 file << p.position;
             }
             file.close();
-			return exp_id;
         }
         catch (...) {
             throw runtime_error("Failed saving experiment results");
@@ -189,6 +203,25 @@ public:
             throw runtime_error("Failed saving configuration");
         }
 	}
+
+    void write_step(const vector<Particle>& particles, int exp_id, int step) {
+		string path = path_to_file_step + to_string(exp_id) + "\\step_" + to_string(step) + ".txt";
+		make_path(path);
+        ofstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("Failed to create file for saving step data");
+        }
+        try {
+            for (const Particle& p : particles) {
+                file << p.position;
+            }
+            file.close();
+        }
+        catch (...) {
+            throw runtime_error("Failed saving step data");
+		}
+    }
+
 
     void check() {
 		cout << "MyReader check" << endl;

@@ -44,13 +44,17 @@ void input(int conf_id, vector<Particle>& particles) {
 	}
 }
 
-json programm(int steps, int conf_id, int exp_id) {
+json programm(json& j) {
 	vector<Particle> particles;
+	int conf_id = j["conf_id"]; // ID конфигурации
+	int steps = j["steps"]; // сколько шагов сделают частицы
 	input(conf_id, particles);
 	if(particles.size() == 0) {
 		cerr << "No particles to simulate." << endl;
 		throw runtime_error("No particles to simulate");
 	}
+	MyWriter* writer = new MyWriter();
+	int try_id = j["result"];
 	int mem_out_bufer = -1;
 	for (int step = 0; step < steps; step++) {
 		bool out = true;
@@ -58,24 +62,17 @@ json programm(int steps, int conf_id, int exp_id) {
 			particles[i].step();
 			out = out && particles[i].check_in_work();
 		}
-		/*if (step % (steps / 100) == 0) {
-			cout << "Complete: " << step / (steps / 100) << endl;
-		}*/
 		if (out && mem_out_bufer < 0) {
 			mem_out_bufer = step;
 		}
+		if (step % 10000 == 0 && step != 0) {
+			writer->write_step(particles, try_id, step);
+		}
 	}
-	MyWriter* writer = new MyWriter();
-	int id = writer->write_result_experiment(particles);
+	writer->write_result_experiment(particles, try_id);
 
-	json j;
-	j["conf_id"] = conf_id;
-	j["experiment_id"] = exp_id;
-	j["steps"] = steps;
 	j["particles_count"] = particles.size();
-	j["result"] = id;
 	j["out_bufer"] = mem_out_bufer;
-	
 
 	for (auto& i : particles) {
 		if (!i.check()) {
@@ -110,10 +107,20 @@ int main() {
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
 			//check_input(conf_id);
 			vector<json> results(repeat);
+
+			for(int i = 0; i < repeat; i++) {
+				json j;
+				j["conf_id"] = conf_id;
+				j["experiment_id"] = exp_id;
+				j["result"] = writer.get_new_id_try();
+				j["steps"] = steps;
+				results[i] = j;
+			}
+
 			#pragma omp parallel for
 			for (int i = 0; i < repeat; i++) {
 				cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
-				results[i] = programm(steps, conf_id, exp_id);
+				results[i] = programm(results[i]);
 			}
 
 			for(auto & res : results) {
