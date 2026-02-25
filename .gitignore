@@ -6,4 +6,4 @@
 /Results
 !.gitignore
 /images/**/Hist/
-
+**/input.json

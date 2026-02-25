@@ -65,7 +65,7 @@ json programm(json& j) {
 		if (out && mem_out_bufer < 0) {
 			mem_out_bufer = step;
 		}
-		if (step % 10000 == 0 && step != 0) {
+		if (step % 100000 == 0 && step != 0) {
 			writer->write_step(particles, try_id, step);
 		}
 	}
