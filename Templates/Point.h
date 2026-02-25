@@ -50,6 +50,15 @@ public:
             *this = *this / length;
     }
 
+    /** @brief Возвращает нормализованную копию вектора */
+    Point normalize() const
+    {
+        double length = len();
+        if (length != 0.0)
+            return *this / length;
+        return *this;
+    }
+
     /** @brief Длина (модуль) вектора */
     double len() const
     {

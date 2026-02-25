@@ -130,6 +130,9 @@ private:
         Point newPos = position + delta;
         if (root->In_Figure(newPos)) {
             position = newPos;
+            if (root->check_cath(position)) {
+                work = false;
+            }
         }
     }
 

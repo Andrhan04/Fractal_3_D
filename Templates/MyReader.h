@@ -17,6 +17,7 @@ private:
     string path_to_file_fractal; // базовый путь к файлам фракталов
     string path_to_file_bufer;   // базовый путь к файлам буферов
     string path_to_config;       // базовый путь к конфигурационным файлам
+	string path_to_trap;  // базовый путь к файлам конфигураций для ловушки
 	string path_to_particles;    // базовый путь к файлам с данными частиц
 public:
     // Конструктор по умолчанию: инициализирует пути к каталогам данных
@@ -25,6 +26,33 @@ public:
 		path_to_file_bufer = "..\\Sowing\\Bufer\\Bufer_";
 		path_to_config = "..\\Sowing\\Config\\Conf_";
 		path_to_particles = "..\\Sowing\\Particle\\points_";
+		path_to_trap = "..\\Sowing\\Trap\\Trap_";
+    }
+
+    json read_to_create_trap() {
+        string path = "input.json";
+		ifstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("File not is open " + path);
+        }
+		json j;
+		file >> j;
+        file.close();
+        if (!j.contains("N") || !j.contains("conf_id"))
+			throw runtime_error("Invalid JSON configuration: missing required fields");
+        return j;
+    }
+
+    json StartMoveTrap() {
+        string path = "input.json";
+        ifstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("File not is open " + path);
+        }
+        json j;
+        file >> j;
+        file.close();
+        return j;
     }
 
     json StartMove() {
