@@ -71,12 +71,12 @@ def calculate_bins_count(min_val, max_val, step_size):
     return max(1, bins_count)  # минимум 1 интервал
 
 
-def create_histogram(step):
+def create_histogram_with_params(step, exp_id, particles_cnt, all_tries, mn_x, mx_x, mn_y, mx_y, mn_z, mx_z, cat_len):
     """
-    Строит гистограмму для указанного шага эксперимента
+    Строит гистограмму для указанного шага эксперимента с передаваемыми параметрами
     """
     # Создаем директорию для сохранения, если её нет
-    save_dir = f"../images/Experiment_{experiment_id}/Hist"
+    save_dir = f"../images/Experiment_{exp_id}/Hist"
     os.makedirs(save_dir, exist_ok=True)
     
     # Собираем все координаты частиц для данного шага по всем запускам
@@ -84,7 +84,7 @@ def create_histogram(step):
     all_y = []
     all_z = []
     
-    for try_id in all_try:
+    for try_id in all_tries:
         # Определяем путь к файлу с данными
         if step == mx_step:  # Финальное положение частиц
             file_path = f"../Experiments/exp_{try_id}.txt"
@@ -108,47 +108,47 @@ def create_histogram(step):
                     continue
     
     # Рассчитываем количество интервалов для каждой оси
-    x_bins_count = calculate_bins_count(mn_x, mx_x, category_len)
-    y_bins_count = calculate_bins_count(mn_y, mx_y, category_len)
-    z_bins_count = calculate_bins_count(mn_z, mx_z, category_len)
+    x_bins_count = calculate_bins_count(mn_x, mx_x, cat_len)
+    y_bins_count = calculate_bins_count(mn_y, mx_y, cat_len)
+    z_bins_count = calculate_bins_count(mn_z, mx_z, cat_len)
     
     # Создаем фигуру с тремя подграфиками
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     if step == mx_step:
-        fig.suptitle(f'Experiment {experiment_id}, Final Step (step {step})\nParticles: {particles_count}, Runs: {len(all_try)}', 
+        fig.suptitle(f'Эксперимент {exp_id}, Финальный шаг (шаг {step})\nЧастицы: {particles_cnt}, Запуски: {len(all_tries)}', 
                      fontsize=16)
     else:
-        fig.suptitle(f'Experiment {experiment_id}, Step {step}\nParticles: {particles_count}, Runs: {len(all_try)}', 
+        fig.suptitle(f'Эксперимент {exp_id}, Шаг {step}\nЧастицы: {particles_cnt}, Запуски: {len(all_tries)}', 
                      fontsize=16)
     
     # Строим гистограмму для X координат
     axes[0].hist(all_x, bins=x_bins_count, alpha=0.7, color='blue', edgecolor='black')
-    axes[0].set_xlabel('X coordinate')
-    axes[0].set_ylabel('Frequency')
-    axes[0].set_title(f'X Distribution (bins: {x_bins_count})')
+    axes[0].set_xlabel('Координата X')
+    axes[0].set_ylabel('Частота')
+    axes[0].set_title(f'Распределение X (интервалы: {x_bins_count})')
     axes[0].grid(True, alpha=0.3)
     
     # Строим гистограмму для Y координат
     axes[1].hist(all_y, bins=y_bins_count, alpha=0.7, color='green', edgecolor='black')
-    axes[1].set_xlabel('Y coordinate')
-    axes[1].set_ylabel('Frequency')
-    axes[1].set_title(f'Y Distribution (bins: {y_bins_count})')
+    axes[1].set_xlabel('Координата Y')
+    axes[1].set_ylabel('Частота')
+    axes[1].set_title(f'Распределение Y (интервалы: {y_bins_count})')
     axes[1].grid(True, alpha=0.3)
     
     # Строим гистограмму для Z координат
     axes[2].hist(all_z, bins=z_bins_count, alpha=0.7, color='red', edgecolor='black')
-    axes[2].set_xlabel('Z coordinate')
-    axes[2].set_ylabel('Frequency')
-    axes[2].set_title(f'Z Distribution (bins: {z_bins_count})')
+    axes[2].set_xlabel('Координата Z')
+    axes[2].set_ylabel('Частота')
+    axes[2].set_title(f'Распределение Z (интервалы: {z_bins_count})')
     axes[2].grid(True, alpha=0.3)
     
     # Добавляем информацию о количестве частиц и размере интервала
     total_particles = len(all_x)
-    expected_particles = particles_count * len(all_try)
+    expected_particles = particles_cnt * len(all_tries)
     
     info_text = (f'Total: {total_particles}\n'
                  f'Expected: {expected_particles}\n'
-                 f'Step size: {category_len}')
+                 f'Step size: {cat_len}')
     
     axes[0].text(0.02, 0.98, info_text, 
                  transform=axes[0].transAxes, verticalalignment='top',
@@ -158,7 +158,7 @@ def create_histogram(step):
     
     # Сохраняем гистограмму
     if step == mx_step:
-        save_path = os.path.join(f"../images/Experiment_{experiment_id}/", f'final_dist.png')
+        save_path = os.path.join(f"../images/Experiment_{exp_id}/", f'final_dist.png')
         plt.savefig(save_path, dpi=150, bbox_inches='tight')
         save_path = os.path.join(save_dir, f'step_{step}.png')
         plt.savefig(save_path, dpi=150, bbox_inches='tight')
@@ -169,6 +169,8 @@ def create_histogram(step):
     plt.close()
     print(f"Гистограмма для шага {step} сохранена: {save_path}")
     print(f"  Интервалы: X={x_bins_count}, Y={y_bins_count}, Z={z_bins_count}")
+
+
 
 
 def create_all_histograms():
@@ -183,13 +185,12 @@ def create_all_histograms():
     print(f"Размер интервала (category_len): {category_len}")
     print(f"Диапазоны: X=[{mn_x:.2f}, {mx_x:.2f}], Y=[{mn_y:.2f}, {mx_y:.2f}], Z=[{mn_z:.2f}, {mx_z:.2f}]")
     
-    # Строим гистограммы для всех шагов
-    # Шаги начинаются с 0 и идут до mx_step (включительно)
-    for step in range(mx_step + 1):
+    # Последовательно обрабатываем все шаги
+    for step in range(100000, mx_step + 1, 100000):
         try:
-            create_histogram(step)
+            create_histogram_with_params(step, experiment_id, particles_count, all_try, mn_x, mx_x, mn_y, mx_y, mn_z, mx_z, category_len)
         except Exception as e:
-            ''
+            pass
     
     print("Построение всех гистограмм завершено!")
 
