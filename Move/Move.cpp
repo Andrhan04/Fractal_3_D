@@ -56,6 +56,10 @@ json programm(json& j) {
 	MyWriter* writer = new MyWriter();
 	int try_id = j["result"];
 	int mem_out_bufer = -1;
+	
+	// Прогресс-бар для шагов
+	const int update_interval = max(1, steps / 100); // Обновляем каждые 1%
+	
 	for (int step = 0; step < steps; step++) {
 		bool out = true;
 		for (size_t i = 0; i < particles.size(); i++) {
@@ -68,7 +72,23 @@ json programm(json& j) {
 		if (step % 100000 == 0 && step != 0) {
 			writer->write_step(particles, try_id, step);
 		}
+		
+		// Обновление прогресс-бара
+		if (step % update_interval == 0 || step == steps - 1) {
+			float progress = (static_cast<float>(step + 1) / steps) * 100.0f;
+			int bar_width = 50;
+			int pos = static_cast<int>(bar_width * progress / 100.0f);
+			
+			cout << "\rStep progress: [";
+			for (int i = 0; i < bar_width; ++i) {
+				if (i < pos) cout << "=";
+				else if (i == pos) cout << ">";
+				else cout << " ";
+			}
+			cout << "] " << fixed << setprecision(1) << progress << "%" << flush;
+		}
 	}
+	cout << endl; // Завершаем строку прогресса
 	writer->write_result_experiment(particles, try_id);
 
 	j["particles_count"] = particles.size();

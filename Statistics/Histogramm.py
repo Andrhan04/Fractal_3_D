@@ -159,11 +159,13 @@ def create_histogram(step):
     # Сохраняем гистограмму
     if step == mx_step:
         save_path = os.path.join(f"../images/Experiment_{experiment_id}/", f'final_dist.png')
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
         save_path = os.path.join(save_dir, f'step_{step}.png')
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
     else:
         save_path = os.path.join(save_dir, f'step_{step}.png')
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
     
-    plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
     print(f"Гистограмма для шага {step} сохранена: {save_path}")
     print(f"  Интервалы: X={x_bins_count}, Y={y_bins_count}, Z={z_bins_count}")

@@ -4,7 +4,7 @@
 
 ### Зависимости
 - Python 3.10+
-- `pip install numpy matplotlib`
+- `pip install numpy matplotlib pillow`
 
 ### Скрипты
 - `paint_fractal.py` — визуализация буфера и фрактала с заданным радиусом.

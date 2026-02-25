@@ -18,8 +18,8 @@
 - Experiments, Results — выходные файлы экспериментов и метаданные.
 
 ## Требования
-- Компилятор C++17 (MSVC/Visual Studio).
-- Python 3.10+ с пакетами: numpy, matplotlib.
+- Компилятор C++17 (MSVC/Visual Studio) с поддержкой OpenMP
+- Python 3.10+ с пакетами: numpy, matplotlib, imageio, Pillow
 
 ## Базовый сценарий
 1. Подготовьте входные данные в Sowing (Bufer_{id}.txt, Pole_{id}.txt, Size).
@@ -29,7 +29,11 @@
 3. Настройте вход Move:
    - используйте Move/input.json (структура как в Move/input.exmple.json) и задайте поля conf_id, exp_id, repeat, steps.
 4. Соберите и запустите Move — будут созданы Experiments/exp_{id}.txt и Results/experiment_{exp_id}.json.
-5. Для визуализации запустите Draw_figure/paint_fractal.py или Draw_figure/Draw_point_positions.py.
+   - Программа отображает прогресс выполнения каждого запуска и общий прогресс
+5. Для визуализации запустите Draw_figure/paint_fractal.py или Draw_point_positions.py.
+6. Для статистического анализа запустите скрипты из папки Statistics:
+   - Histogramm.py — построение гистограмм распределения частиц
+   - Get_gif_histogram.py — создание анимированного GIF из гистограмм
 
 ## Форматы
 - Move/input.json — массив объектов: { conf_id, exp_id, repeat, steps }.
