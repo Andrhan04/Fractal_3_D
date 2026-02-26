@@ -115,40 +115,40 @@ def create_histogram(step):
     # Создаем фигуру с тремя подграфиками
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     if step == mx_step:
-        fig.suptitle(f'Experiment {experiment_id}, Final Step (step {step})\nParticles: {particles_count}, Runs: {len(all_try)}', 
+        fig.suptitle(f'Эксперимент {experiment_id}, Финальный шаг (шаг {step})\nЧастицы: {particles_count}, Запуски: {len(all_try)}', 
                      fontsize=16)
     else:
-        fig.suptitle(f'Experiment {experiment_id}, Step {step}\nParticles: {particles_count}, Runs: {len(all_try)}', 
+        fig.suptitle(f'Эксперимент {experiment_id}, Шаг {step}\nЧастицы: {particles_count}, Запуски: {len(all_try)}', 
                      fontsize=16)
     
     # Строим гистограмму для X координат
     axes[0].hist(all_x, bins=x_bins_count, alpha=0.7, color='blue', edgecolor='black')
-    axes[0].set_xlabel('X coordinate')
-    axes[0].set_ylabel('Frequency')
-    axes[0].set_title(f'X Distribution (bins: {x_bins_count})')
+    axes[0].set_xlabel('Координата X')
+    axes[0].set_ylabel('Частота')
+    axes[0].set_title(f'Распределение X (интервалы: {x_bins_count})')
     axes[0].grid(True, alpha=0.3)
     
     # Строим гистограмму для Y координат
     axes[1].hist(all_y, bins=y_bins_count, alpha=0.7, color='green', edgecolor='black')
-    axes[1].set_xlabel('Y coordinate')
-    axes[1].set_ylabel('Frequency')
-    axes[1].set_title(f'Y Distribution (bins: {y_bins_count})')
+    axes[1].set_xlabel('Координата Y')
+    axes[1].set_ylabel('Частота')
+    axes[1].set_title(f'Распределение Y (интервалы: {y_bins_count})')
     axes[1].grid(True, alpha=0.3)
     
     # Строим гистограмму для Z координат
     axes[2].hist(all_z, bins=z_bins_count, alpha=0.7, color='red', edgecolor='black')
-    axes[2].set_xlabel('Z coordinate')
-    axes[2].set_ylabel('Frequency')
-    axes[2].set_title(f'Z Distribution (bins: {z_bins_count})')
+    axes[2].set_xlabel('Координата Z')
+    axes[2].set_ylabel('Частота')
+    axes[2].set_title(f'Распределение Z (интервалы: {z_bins_count})')
     axes[2].grid(True, alpha=0.3)
     
     # Добавляем информацию о количестве частиц и размере интервала
     total_particles = len(all_x)
     expected_particles = particles_count * len(all_try)
     
-    info_text = (f'Total: {total_particles}\n'
-                 f'Expected: {expected_particles}\n'
-                 f'Step size: {category_len}')
+    info_text = (f'Всего: {total_particles}\n'
+                 f'Ожидалось: {expected_particles}\n'
+                 f'Размер шага: {category_len}')
     
     axes[0].text(0.02, 0.98, info_text, 
                  transform=axes[0].transAxes, verticalalignment='top',
