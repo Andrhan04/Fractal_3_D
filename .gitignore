@@ -6,4 +6,5 @@
 /Results
 !.gitignore
 /images/**/Hist/
+/images/**/Projections*
 **/input.json
