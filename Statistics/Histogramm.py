@@ -121,30 +121,30 @@ def create_histogram(step):
         fig.suptitle(f'Эксперимент {experiment_id}, Шаг {step}\nЧастицы: {particles_count}, Запуски: {len(all_try)}', 
                      fontsize=16)
     
-    # Строим гистограмму для X координат
-    axes[0].hist(all_x, bins=x_bins_count, alpha=0.7, color='blue', edgecolor='black')
+    # Строим гистограмму для X координат (нормализованную)
+    axes[0].hist(all_x, bins=x_bins_count, alpha=0.7, color='blue', edgecolor='black', density=True)
     axes[0].set_xlabel('Координата X')
-    axes[0].set_ylabel('Частота')
+    axes[0].set_ylabel('Относительная частота')
     axes[0].set_title(f'Распределение X (интервалы: {x_bins_count})')
     axes[0].grid(True, alpha=0.3)
     
-    # Строим гистограмму для Y координат
-    axes[1].hist(all_y, bins=y_bins_count, alpha=0.7, color='green', edgecolor='black')
+    # Строим гистограмму для Y координат (нормализованную)
+    axes[1].hist(all_y, bins=y_bins_count, alpha=0.7, color='green', edgecolor='black', density=True)
     axes[1].set_xlabel('Координата Y')
-    axes[1].set_ylabel('Частота')
+    axes[1].set_ylabel('Относительная частота')
     axes[1].set_title(f'Распределение Y (интервалы: {y_bins_count})')
     axes[1].grid(True, alpha=0.3)
     
-    # Строим гистограмму для Z координат
-    axes[2].hist(all_z, bins=z_bins_count, alpha=0.7, color='red', edgecolor='black')
+    # Строим гистограмму для Z координат (нормализованную)
+    axes[2].hist(all_z, bins=z_bins_count, alpha=0.7, color='red', edgecolor='black', density=True)
     axes[2].set_xlabel('Координата Z')
-    axes[2].set_ylabel('Частота')
+    axes[2].set_ylabel('Относительная частота')
     axes[2].set_title(f'Распределение Z (интервалы: {z_bins_count})')
     axes[2].grid(True, alpha=0.3)
     
     # Добавляем информацию о количестве частиц и размере интервала
     total_particles = len(all_x)
-    expected_particles = particles_count * len(all_try)
+    expected_particles = particles_count
     
     info_text = (f'Всего: {total_particles}\n'
                  f'Ожидалось: {expected_particles}\n'
@@ -185,7 +185,7 @@ def create_all_histograms():
     
     # Строим гистограммы для всех шагов
     # Шаги начинаются с 0 и идут до mx_step (включительно)
-    for step in range(mx_step + 1):
+    for step in range(100000, mx_step + 1, 100000):
         try:
             create_histogram(step)
         except Exception as e:
