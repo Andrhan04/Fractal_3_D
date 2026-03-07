@@ -36,7 +36,46 @@ python Histogramm.py
 python Get_gif_histogram.py
 ```
 
-### 3. [input.exmple.json](file:///c:/Users/user/source/Fractal_3_D/Statistics/input.exmple.json)
+### 3. [Get_proections.py](file:///c:/Users/user/source/Fractal_3_D/Statistics/Get_proections.py)
+**Назначение**: Создает проекции частиц, фрактала и буфера на плоскости OXY, OXZ, OYZ.
+
+**Функциональность:**
+- Читает параметры эксперимента из файла `input.json`
+- Извлекает данные о конфигурации, фрактале и буфере
+- Обрабатывает данные из одного запуска эксперимента (без усреднения)
+- Создает проекции на все три плоскости: OXY, OXZ, OYZ
+- Визуализирует частицы, фрактал и буфер с цветовой схемой:
+  - Частицы: зеленый
+  - Фрактал: синий (прозрачный в 3D)
+  - Буфер: красный (прозрачный в 3D)
+- Использует геометрическое представление:
+  - Для OXY/OXZ: прямоугольники между точками с размером 2*rad
+  - Для OYZ: окружности радиусом rad, соединенные прямоугольниками
+- Сохраняет изображения проекций в папку `../images/Experiment_{id}/Projections/`
+- Создает как 2D проекции, так и 3D визуализацию
+
+**Использование:**
+```bash
+python Get_proections.py
+```
+
+### 4. [Get_gif_proections.py](file:///c:/Users/user/source/Fractal_3_D/Statistics/Get_gif_proections.py)
+**Назначение**: Создает анимированный GIF из последовательности проекций.
+
+**Функциональность:**
+- Читает ID эксперимента из файла `input.json`
+- Находит все файлы проекций в папке `../images/Experiment_{id}/Projections/`
+- Сортирует файлы по номеру шага
+- Создает анимированный GIF с настраиваемой длительностью кадра
+- Оптимизирует GIF для уменьшения размера файла
+- Сохраняет GIF в папку `../images/Experiment_{id}/`
+
+**Использование:**
+```bash
+python Get_gif_proections.py
+```
+
+### 5. [input.exmple.json](file:///c:/Users/user/source/Fractal_3_D/Statistics/input.exmple.json)
 **Назначение**: Пример файла конфигурации для скриптов.
 
 **Содержит:**
@@ -50,7 +89,9 @@ python Get_gif_histogram.py
 
 1. Настройте `input.json` с параметрами эксперимента
 2. Запустите `Histogramm.py` для создания гистограмм
-3. Запустите `Get_gif_histogram.py` для создания анимации
+3. Запустите `Get_gif_histogram.py` для создания анимации гистограмм
+4. Запустите `Get_proections.py` для создания проекций
+5. Запустите `Get_gif_proections.py` для создания анимации проекций
 
 ## Зависимости
 

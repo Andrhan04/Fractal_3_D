@@ -21,10 +21,7 @@ void input(int conf_id, vector<Particle>& particles) {
 	MyReader reader;
     json j = reader.read_config(conf_id);
     // cout << j.dump(4) << '\n';
-    // Проверка обязательных полей
-    if (!j.contains("Fractal") || !j.contains("Bufer") || !j.contains("Size")) {
-		throw runtime_error("Invalid JSON configuration: missing required fields");
-    }
+    
 	try {
 		double size = j["Size"];
 		Fractal* fractal = reader.read_fractal(j["Fractal"], size);
@@ -57,8 +54,6 @@ json programm(json& j) {
 	int try_id = j["result"];
 	int mem_out_bufer = -1;
 	
-	// Прогресс-бар для шагов
-	const int update_interval = max(1, steps / 100); // Обновляем каждые 1%
 	
 	for (int step = 0; step < steps; step++) {
 		bool out = true;
@@ -72,23 +67,7 @@ json programm(json& j) {
 		if (step % 100000 == 0 && step != 0) {
 			writer->write_step(particles, try_id, step);
 		}
-		
-		// Обновление прогресс-бара
-		if (step % update_interval == 0 || step == steps - 1) {
-			float progress = (static_cast<float>(step + 1) / steps) * 100.0f;
-			int bar_width = 50;
-			int pos = static_cast<int>(bar_width * progress / 100.0f);
-			
-			cout << "\rStep progress: [";
-			for (int i = 0; i < bar_width; ++i) {
-				if (i < pos) cout << "=";
-				else if (i == pos) cout << ">";
-				else cout << " ";
-			}
-			cout << "] " << fixed << setprecision(1) << progress << "%" << flush;
-		}
 	}
-	cout << endl; // Завершаем строку прогресса
 	writer->write_result_experiment(particles, try_id);
 
 	j["particles_count"] = particles.size();
@@ -142,7 +121,6 @@ int main() {
 				cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
 				results[i] = programm(results[i]);
 			}
-
 			for(auto & res : results) {
 				writer.write_result_experiment_config(res, exp_id);
 			}

@@ -45,6 +45,30 @@ public:
 		return j;
     }
 
+    json GeneratePoint() {
+        string path = "input.json";
+        ifstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("File not is open " + path);
+        }
+		json j;
+        file >> j;
+        file.close();
+        if (!j.contains("Bufer") || !j.contains("Fractals") || !j.contains("N") || !j.contains("Size")) {
+            throw runtime_error("File not is open " + path);
+        }
+        if (j["N"] > 0 && j["Size"] > 0) {
+            if (j["Fractals"].size() == 0) {
+                throw runtime_error("Invalid JSON configuration: missing required fields in Fractals array in " + path);
+            }
+            else {
+                return j;
+			}
+        }
+        else {
+            throw runtime_error("N and Size must be greater than 0 in " + path);
+		}
+    }
 
     // Читает JSON-конфигурацию по заданному идентификатору
     json read_config(int config_id) {
@@ -54,10 +78,14 @@ public:
         if (!file.is_open()) {
 			throw runtime_error("File not is open " + path);
         }
-        json config;
-        file >> config;
+        json j;
+        file >> j;
 		file.close();
-        return config;
+        // Проверка обязательных полей
+        if (!j.contains("Fractal") || !j.contains("Bufer") || !j.contains("Size")) {
+            throw runtime_error("Invalid JSON configuration: missing required fields");
+        }
+        return j;
 	}
 
     // Читает данные буфера из текстового файла и возвращает указатель на BuferZone

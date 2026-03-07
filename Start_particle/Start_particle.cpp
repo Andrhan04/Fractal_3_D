@@ -63,33 +63,21 @@ int generate_particle(int n, int sz, int id_buf) {
 int main() {
     // Получаем свободные ID для конфигурации и частиц
 	MyWriter writer;
-    string file_input = "config.txt";
+    MyReader reader;
 
-    ifstream f(file_input);
-    if (!f.is_open()) {
-        cout << "Failed to open configuration file" << endl;
-        return 1;
-    }
-
-    cout << "Configuration file opened" << endl;
-    int id_buf, id_frac, n, sz;
-    f >> id_buf >> id_frac >> n >> sz;
-    f.close();
-
-    if (n < 1 || sz < 1) {
-        cout << "N and size must be positive" << endl;
-        return 1;
-    }
+	json conf = reader.GeneratePoint();
 
     cout << "Input is valid" << endl;
 
     try {
         json j;
-        j["Bufer"] = id_buf;
-        j["Fractal"] = id_frac;
-        j["Size"] = sz;
-        j["Point"] = generate_particle(n, sz, id_buf);
-		writer.write_config(j);
+        j["Bufer"] = conf["Bufer"];
+        j["Size"] = conf["Size"];
+        j["Point"] = generate_particle(conf["N"], conf["Size"], conf["Bufer"]);
+        for (auto& item : conf["Fractals"]) {
+            j["Fractal"] = item;
+		    writer.write_config(j);
+		}
         return 0;
     }
     catch (const exception& ex) {
