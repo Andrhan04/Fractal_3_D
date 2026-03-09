@@ -277,7 +277,7 @@ def main():
     export_fbx(output_path, cylinders, points)
     
     plt.title(f"Experiment {exp_id}, Try {try_id}")
-    plt.show()
+    #plt.show()
 
 
 if __name__ == "__main__":

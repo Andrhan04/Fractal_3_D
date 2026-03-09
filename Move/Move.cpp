@@ -20,20 +20,12 @@ const string path_to_config = "..\\Sowing\\Config\\";
 void input(int conf_id, vector<Particle>& particles) {
 	MyReader reader;
     json j = reader.read_config(conf_id);
-    // cout << j.dump(4) << '\n';
     
 	try {
 		double size = j["Size"];
 		Fractal* fractal = reader.read_fractal(j["Fractal"], size);
-		//cout << "Fractal:\n" << *fractal << endl;
 		BuferZone* bufer = reader.read_bufer(j["Bufer"], size);
-		//cout << "Bufer:\n" << *bufer << endl;
 		particles = reader.read_particles(j["Point"], bufer, fractal);
-		/*cout << "Particles:\n";
-		for (size_t i = 0; i < particles.size(); i++) {
-			cout << "Particle " << i + 1 << ": " << particles[i].position;
-			particles[i].check();
-		}*/
 	}
 	catch (const exception& e) {
 		cerr << "Error during reading data: " << e.what() << endl;
@@ -104,7 +96,6 @@ int main() {
 			int steps = value["steps"]; // сколько шагов сделают частицы
 			int exp_id = value["exp_id"]; // ID эксперимента для сохранения результатов
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
-			//check_input(conf_id);
 			vector<json> results(repeat);
 
 			for(int i = 0; i < repeat; i++) {
