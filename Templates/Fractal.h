@@ -3,7 +3,7 @@
 #include "..\Templates\Trap.h"
 #include "..\Templates\Figure.h"
 #include "..\Templates\Generator.h"
-#include <cmath>
+#include <math.h>
 #include <cstdlib>
 
 using namespace std;
@@ -83,9 +83,9 @@ public:
     }
 
     // Генерация случайной точки на боковой поверхности цилиндра
-	Point generate_point(Generator& gen) {
+	Point generate_point() {
 		// Генерируем случайный угол от 0 до 2π
-		double angle = gen.get_double(0.0, 2.0 * M_PI);
+		double angle = gen.get_double(0.0, 2.0 * PI);
 		
 		// Генерируем случайную высоту между нижней и верхней окружностями
 		double t = gen.get_double(0.0, 1.0);
@@ -155,4 +155,6 @@ public:
 private:
     // Закрытая часть класса пока пуста
 	vector<Trap*> traps; // Вектор указателей на ловушки, связанных с этим фракталом
+    Generator gen = Generator();
+    double PI = acos(-1);
 };

@@ -1,29 +1,38 @@
 #pragma once
 #include <cmath>
+#include <iostream>
 #include "../Templates/Point.h"
 
 class Trap {
 public:
     /** @brief Позиция ловушки */
     Point *position;
+    int segment_id = 0;
     /** @brief Радиус ловушки */
-    double radius;
+    double radius = 0.5;
 
 	bool alive = true; // Флаг, указывающий, активна ли ловушка
 
     /** @brief Базовый конструктор ловушки */
-    Trap() : position(new Point()), radius(1.0) {}
+    Trap() : position(new Point()), radius(0.5), segment_id(0) {}
 
     /** @brief Конструктор ловушки с параметрами */
-    Trap(Point *position, double radius) {
+    Trap(Point *position, int segment) {
         this->position = position;
-        this->radius = radius;
+        this->radius = 0.5;
+        this->segment_id = segment;
     }
 
-    /** @brief Деструктор ловушки */
-    ~Trap() {
-        delete position;
+    /** @brief Перегрузка вывода в поток */
+    friend std::ostream& operator<<(std::ostream& os, const Trap& t){
+        os  << t.segment_id << " " << *t.position << " " << t.radius;
+        return os;
     }
+
+    bool operator<(const Trap& other) const { return (segment_id < other.segment_id) || (segment_id == other.segment_id && position < other.position); }
+    bool operator<(const Trap* other) const { return (segment_id < other->segment_id) || (segment_id == other->segment_id && position < other->position); }
+    bool operator>(const Trap& other) const { return (segment_id > other.segment_id) || (segment_id == other.segment_id && position > other.position); }
+    bool operator>(const Trap* other) const { return (segment_id > other->segment_id) || (segment_id == other->segment_id && position > other->position); }
 
     /** @brief Проверка, поймана ли частица */
     bool is_catch(Point *point) {
@@ -41,9 +50,5 @@ public:
         return (*point - *position).len();
     }
 
-    /** @brief Оператор вывода в поток */
-    friend std::ostream& operator<<(std::ostream& os, const Trap& trap) {
-        os << "Trap(position: " << *trap.position << ", radius: " << trap.radius << ")";
-        return os;
-    }
+
 };

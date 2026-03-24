@@ -84,6 +84,7 @@ private:
 	string path_to_save_result_experiment; // базовый путь для сохранения результатов эксперимента
 	string path_to_save_result_experiment_config; // базовый путь для сохранения конфигурации эксперимента
 	string path_to_file_step;     // базовый путь для сохранения данных по шагам симуляции
+    string path_to_traps;
 public:
     MyWriter() {
 		path_to_file_fractal = "..\\Sowing\\Fractal\\Pole_";
@@ -93,6 +94,7 @@ public:
 		path_to_save_result_experiment = "..\\Experiments\\exp_";
 		path_to_save_result_experiment_config = "..\\Results\\experiment_";
 		path_to_file_step = "..\\Experiments\\Experiment_";
+        path_to_traps = "..\\Sowing\\Trap\\Traps_";
     }
 
     int get_new_id_try() {
@@ -169,6 +171,25 @@ public:
         }
     }
 
+    int write_traps(const vector<Trap>& traps) {
+        int conf_id = get_new_id(path_to_traps);
+        string path = path_to_traps + to_string(conf_id) + ".txt";
+        ofstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("Failed to create file for saving traps");
+        }
+        try {
+            for (const Trap& p : traps) {
+                file << p << '\n';
+            }
+            file.close();
+            return conf_id;
+        }
+        catch (...) {
+            throw runtime_error("Failed saving traps");
+        }
+    }
+
 	int write_particles(const vector<Point>& particles) {
 	    int conf_id = get_new_id(path_to_particles);
 	    string path = path_to_particles + to_string(conf_id) + ".txt";
@@ -187,6 +208,21 @@ public:
             throw runtime_error("Failed saving particles");
         }
 	}
+
+    void rewrite_config(const json& config, int id) {
+        string path = path_to_config + to_string(id) + ".json";
+        ofstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("Failed to create file for saving configuration");
+        }
+        try {
+            file << config.dump(); // Сохраняем JSON без отступов (массивы в одной строке)
+            file.close();
+        }
+        catch (...) {
+            throw runtime_error("Failed saving configuration");
+        }
+    }
 
     void write_config(const json& config) {
 		int conf_id = get_new_id(path_to_config);

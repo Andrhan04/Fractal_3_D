@@ -38,20 +38,8 @@ public:
 		json j;
 		file >> j;
         file.close();
-        if (!j.contains("N") || !j.contains("conf_id"))
+        if (!j.contains("N_min") || !j.contains("conf_id") || !j.contains("N_max") || !j.contains("Step"))
 			throw runtime_error("Invalid JSON configuration: missing required fields");
-        return j;
-    }
-
-    json StartMoveTrap() {
-        string path = "input.json";
-        ifstream file(path);
-        if (!file.is_open()) {
-            throw runtime_error("File not is open " + path);
-        }
-        json j;
-        file >> j;
-        file.close();
         return j;
     }
 
