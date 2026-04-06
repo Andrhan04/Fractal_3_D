@@ -83,11 +83,12 @@ public:
     }
 
     // Генерация случайной точки на боковой поверхности цилиндра
+	// Цилиндры наклонные, но основания перпендикулярны оси OX
 	Point generate_point() {
 		// Генерируем случайный угол от 0 до 2π
 		double angle = gen.get_double(0.0, 2.0 * PI);
 		
-		// Генерируем случайную высоту между нижней и верхней окружностями
+		// Генерируем случайную позицию вдоль оси цилиндра между центрами оснований
 		double t = gen.get_double(0.0, 1.0);
 		
 		// Вычисляем центр на оси цилиндра в позиции t
@@ -100,21 +101,14 @@ public:
 		// Используем средний радиус двух окружностей
 		double avg_radius = (down->r + up->r) / 2.0;
 		
-		// Находим нормаль к оси цилиндра
-		Point axis_dir(up->O->x - down->O->x, up->O->y - down->O->y, up->O->z - down->O->z);
-		
-		// Создаем два ортогональных вектора в плоскости, перпендикулярной оси
-		Point perp1, perp2;
-		
-		if (std::abs(axis_dir.x) > 1e-9 || std::abs(axis_dir.y) > 1e-9) {
-			perp1 = Point(-axis_dir.y, axis_dir.x, 0.0);
-		} else {
-			perp1 = Point(0.0, -axis_dir.z, axis_dir.y);
-		}
-		perp1 = perp1.normalize();
-		perp2 = axis_dir.cross(perp1).normalize();
+		// Поскольку основания перпендикулярны OX, нормаль к основаниям - это ось OX
+		// Создаем два ортогональных вектора в плоскости, перпендикулярной OX
+		// Эти векторы будут лежать в плоскости оснований (YZ-плоскость, но смещенная)
+		Point perp1(0.0, 1.0, 0.0);  // Вектор вдоль оси Y
+		Point perp2(0.0, 0.0, 1.0);  // Вектор вдоль оси Z
 		
 		// Вычисляем точку на поверхности цилиндра
+		// Смещаем от центра в плоскости, перпендикулярной OX
 		Point surface_point = center + perp1 * (avg_radius * cos(angle)) + perp2 * (avg_radius * sin(angle));
 		
 		return surface_point;
@@ -151,6 +145,12 @@ public:
     int get_traps_count() const {
         return traps.size();
 	}
+
+    void out_traps() const {
+        for (auto i : traps) {
+            cout << *i << endl;
+        }
+    }
 
 private:
     // Закрытая часть класса пока пуста

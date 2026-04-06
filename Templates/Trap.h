@@ -17,6 +17,13 @@ public:
     Trap() : position(new Point()), radius(0.5), segment_id(0) {}
 
     /** @brief Конструктор ловушки с параметрами */
+    Trap(int segment, Point* position, double radius) {
+        this->position = position;
+        this->radius = radius;
+        this->segment_id = segment;
+    }
+
+    /** @brief Конструктор ловушки с параметрами */
     Trap(Point *position, int segment) {
         this->position = position;
         this->radius = 0.5;
@@ -25,7 +32,12 @@ public:
 
     /** @brief Перегрузка вывода в поток */
     friend std::ostream& operator<<(std::ostream& os, const Trap& t){
-        os  << t.segment_id << " " << *t.position << " " << t.radius;
+        if (t.alive) {
+            os << t.segment_id << " " << *t.position << " " << t.radius;
+        }
+        else {
+            os << "DEAD " << *t.position;
+        }
         return os;
     }
 

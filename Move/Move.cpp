@@ -17,7 +17,7 @@ const string no = "NO";
 const string path_to_config = "..\\Sowing\\Config\\";
 
 // Функция читает конфигурационный JSON
-void input(int conf_id, vector<Particle>& particles) {
+void input(int conf_id, vector<Particle>& particles, int trap_id) {
 	MyReader reader;
     json j = reader.read_config(conf_id);
     // cout << j.dump(4) << '\n';
@@ -27,16 +27,18 @@ void input(int conf_id, vector<Particle>& particles) {
     }
 	try {
 		double size = j["Size"];
-		Fractal* fractal = reader.read_fractal(j["Fractal"], size);
-		//cout << "Fractal:\n" << *fractal << endl;
 		BuferZone* bufer = reader.read_bufer(j["Bufer"], size);
 		//cout << "Bufer:\n" << *bufer << endl;
+		Fractal* fractal = reader.read_fractal(j["Fractal"], size);
+		//cout << "Fractal:\n" << *fractal << endl;
+		if (j.contains("Traps")) {
+			for(auto & trap : j["Traps"]) {
+				//cout << trap << endl;
+				//reader.add_trap(trap, fractal);
+			}
+			reader.read_traps(j["Traps"][trap_id], fractal);
+		}
 		particles = reader.read_particles(j["Point"], bufer, fractal);
-		/*cout << "Particles:\n";
-		for (size_t i = 0; i < particles.size(); i++) {
-			cout << "Particle " << i + 1 << ": " << particles[i].position;
-			particles[i].check();
-		}*/
 	}
 	catch (const exception& e) {
 		cerr << "Error during reading data: " << e.what() << endl;
@@ -44,11 +46,11 @@ void input(int conf_id, vector<Particle>& particles) {
 	}
 }
 
-json programm(json& j) {
+json programm(json& j, int trap_id) {
 	vector<Particle> particles;
 	int conf_id = j["conf_id"]; // ID конфигурации
 	int steps = j["steps"]; // сколько шагов сделают частицы
-	input(conf_id, particles);
+	input(conf_id, particles, trap_id);
 	if(particles.size() == 0) {
 		cerr << "No particles to simulate." << endl;
 		throw runtime_error("No particles to simulate");
@@ -56,9 +58,6 @@ json programm(json& j) {
 	MyWriter* writer = new MyWriter();
 	int try_id = j["result"];
 	int mem_out_bufer = -1;
-	
-	// Прогресс-бар для шагов
-	const int update_interval = max(1, steps / 100); // Обновляем каждые 1%
 	
 	for (int step = 0; step < steps; step++) {
 		bool out = true;
@@ -72,23 +71,7 @@ json programm(json& j) {
 		if (step % 100000 == 0 && step != 0) {
 			writer->write_step(particles, try_id, step);
 		}
-		
-		// Обновление прогресс-бара
-		if (step % update_interval == 0 || step == steps - 1) {
-			float progress = (static_cast<float>(step + 1) / steps) * 100.0f;
-			int bar_width = 50;
-			int pos = static_cast<int>(bar_width * progress / 100.0f);
-			
-			cout << "\rStep progress: [";
-			for (int i = 0; i < bar_width; ++i) {
-				if (i < pos) cout << "=";
-				else if (i == pos) cout << ">";
-				else cout << " ";
-			}
-			cout << "] " << fixed << setprecision(1) << progress << "%" << flush;
-		}
 	}
-	cout << endl; // Завершаем строку прогресса
 	writer->write_result_experiment(particles, try_id);
 
 	j["particles_count"] = particles.size();
@@ -105,12 +88,16 @@ json programm(json& j) {
 
 void check_input(int conf_id) {
 	vector<Particle> particles;
-	input(conf_id, particles);
-	for (auto& i : particles) {
-		if (!i.check()) {
-			cout << "ERROR" << i.position;
-		}
+	input(conf_id, particles, 0);
+	if (particles.empty()) cout << "ERROR" << endl;
+	else {
+		//particles[0].out_traps();
 	}
+	Point p = Point(3.7, 1.5, 14.3);
+	particles[0].move(p);
+	cout << particles[0].is_Alive();
+	particles[1].out_traps();
+	//0 3.6751 1.03718 14.3653 0.5
 }
 
 int main() {
@@ -126,6 +113,8 @@ int main() {
 			int exp_id = value["exp_id"]; // ID эксперимента для сохранения результатов
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
 			//check_input(conf_id);
+			/*
+			*/
 			vector<json> results(repeat);
 
 			for(int i = 0; i < repeat; i++) {
@@ -136,11 +125,21 @@ int main() {
 				j["steps"] = steps;
 				results[i] = j;
 			}
-
-			#pragma omp parallel for
-			for (int i = 0; i < repeat; i++) {
-				cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
-				results[i] = programm(results[i]);
+			if (j.contains("Traps")) {
+				for (int trap_id = 0; trap_id < j["Traps"].size(); trap_id++) {
+					#pragma omp parallel for
+					for (int i = 0; i < repeat; i++) {
+						cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
+						results[i] = programm(results[i], trap_id);
+					}
+				}
+			}
+			else {
+				#pragma omp parallel for
+				for (int i = 0; i < repeat; i++) {
+					cout << "Run " << i + 1 << " of configuration " << conf_id << ":\n";
+					results[i] = programm(results[i], -1);
+				}
 			}
 
 			for(auto & res : results) {

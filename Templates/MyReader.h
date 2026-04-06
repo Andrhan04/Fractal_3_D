@@ -6,6 +6,7 @@
 #include "..\Templates\Bufer.h"
 #include "..\Templates\Fractal.h"
 #include "..\Templates\Particle.h"
+#include "..\Templates\Trap.h"
 
 using json = nlohmann::json;
 using namespace std;
@@ -14,6 +15,19 @@ using namespace std;
 // Класс для чтения данных из файлов: конфигураций, буферов и фракталов
 class MyReader{
 private:
+
+    void add_trap(Trap* t, Fractal* root) {
+        int seg = t->segment_id;
+        while (root != nullptr && seg > 0) {
+            root = root->next;
+            seg--;
+		}
+        root->addTrap(t);
+        while(root->prev != nullptr) {
+            root = root->prev;
+		}
+	}
+
     string path_to_file_fractal; // базовый путь к файлам фракталов
     string path_to_file_bufer;   // базовый путь к файлам буферов
     string path_to_config;       // базовый путь к конфигурационным файлам
@@ -26,7 +40,7 @@ public:
 		path_to_file_bufer = "..\\Sowing\\Bufer\\Bufer_";
 		path_to_config = "..\\Sowing\\Config\\Conf_";
 		path_to_particles = "..\\Sowing\\Particle\\points_";
-		path_to_trap = "..\\Sowing\\Trap\\Trap_";
+		path_to_trap = "..\\Sowing\\Trap\\Traps_";
     }
 
     json read_to_create_trap() {
@@ -75,6 +89,22 @@ public:
 		file.close();
         return config;
 	}
+
+    void read_traps(int config_id, Fractal* root) {
+        string path = path_to_trap + to_string(config_id) + ".txt";
+        ifstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("File not is open " + path);
+        }
+        int id;
+		double x, y, z, range;
+        while (file >> id >> x >> y >> z >> range) {
+			Point* p = new Point(x, y, z);
+			Trap* t = new Trap(id, p, range);
+            //cout << *t << endl;
+			add_trap(t, root);
+        }
+    }
 
     // Читает данные буфера из текстового файла и возвращает указатель на BuferZone
     BuferZone* read_bufer(int bufer_id, int size) {
