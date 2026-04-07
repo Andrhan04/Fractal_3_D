@@ -134,7 +134,7 @@ public:
 
     bool check_cath(Point& p) {
         for (Trap* trap : traps) {
-            if (trap->is_catch(&p)) {
+            if (trap->alive && trap->is_catch(&p)) {
                 return true;
             }
         }

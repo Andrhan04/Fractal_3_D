@@ -82,7 +82,9 @@ private:
     string path_to_config;       // базовый путь к конфигурационным файлам
 	string path_to_particles;    // базовый путь к файлам с данными частиц
 	string path_to_save_result_experiment; // базовый путь для сохранения результатов эксперимента
+    string path_to_save_result_experiment_trap; // базовый путь для сохранения результатов эксперимента
 	string path_to_save_result_experiment_config; // базовый путь для сохранения конфигурации эксперимента
+    string path_to_save_result_experiment_config_trap; // базовый путь для сохранения конфигурации эксперимента
 	string path_to_file_step;     // базовый путь для сохранения данных по шагам симуляции
     string path_to_traps;
 public:
@@ -92,7 +94,9 @@ public:
 		path_to_config = "..\\Sowing\\Config\\Conf_";
 		path_to_particles = "..\\Sowing\\Particle\\points_";
 		path_to_save_result_experiment = "..\\Experiments\\exp_";
+        path_to_save_result_experiment_trap = "..\\Experiments_traps\\exp_";
 		path_to_save_result_experiment_config = "..\\Results\\experiment_";
+        path_to_save_result_experiment_config_trap = "..\\Results_traps\\experiment_";
 		path_to_file_step = "..\\Experiments\\Experiment_";
         path_to_traps = "..\\Sowing\\Trap\\Traps_";
     }
@@ -111,6 +115,20 @@ public:
 		return exp_id;
     }
 
+    int get_new_id_try_traps() {
+        make_path(path_to_save_result_experiment_trap);
+        int exp_id = get_new_id(path_to_save_result_experiment_trap);
+        string path = path_to_save_result_experiment_trap + to_string(exp_id) + ".txt";
+        ofstream file(path);
+        if (file.is_open()) {
+            file.close();
+        }
+        else {
+            throw runtime_error("Failed to create file for saving experiment");
+        }
+        return exp_id;
+    }
+
     void write_result_experiment(const vector<Particle>& particles, int exp_id) {
         string path = path_to_save_result_experiment + to_string(exp_id) + ".txt";
         ofstream file(path);
@@ -119,7 +137,7 @@ public:
         }
         try {
             for (const Particle& p : particles) {
-                file << p.position;
+                file << p.position << endl;
             }
             file.close();
         }
@@ -127,6 +145,24 @@ public:
             throw runtime_error("Failed saving experiment results");
         }
 	}
+
+    void write_result_experiment_trap(const vector<Particle>& particles, int exp_id) {
+        string path = path_to_save_result_experiment_trap + to_string(exp_id) + ".txt";
+        ofstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("Failed to create file for saving experiment");
+        }
+        try {
+            //file << j << endl;
+            for (const Particle& p : particles) {
+                file << p.position << endl;
+            }
+            file.close();
+        }
+        catch (...) {
+            throw runtime_error("Failed saving experiment results");
+        }
+    }
 
     void write_result_experiment_config(const json& config, int exp_id) {
         // Формируем полный путь к файлу конфигурации эксперимента по ID
@@ -163,6 +199,49 @@ public:
             try {
                 // Записываем JSON в файл с отступами (4 пробела) для удобства чтения
                 file << json::array({config}).dump(4);
+                file.close();
+            }
+            catch (...) {
+                throw runtime_error("Failed saving experiment configuration");
+            }
+        }
+    }
+
+    void write_result_experiment_config_with_trap(const json& config, int exp_id) {
+        // Формируем полный путь к файлу конфигурации эксперимента по ID
+        make_path(path_to_save_result_experiment_config_trap);
+        string path = path_to_save_result_experiment_config_trap + to_string(exp_id) + ".json";
+        // Проверяем, не существует ли уже файл с таким именем
+        if (filesystem::exists(path)) {
+            json existing_config;
+            ifstream existing_file(path);
+            if (existing_file.is_open()) {
+                existing_file >> existing_config;
+                existing_file.close();
+                ofstream file(path);
+                if (!file.is_open()) {
+                    throw runtime_error("Failed to open existing experiment configuration file for appending");
+                }
+                else {
+                    // Добавляем новую конфигурацию к существующему массиву
+                    existing_config.push_back(config);
+                    file << existing_config.dump(4);
+                    file.close();
+                }
+            }
+            else {
+                throw runtime_error("Failed to open existing experiment configuration file");
+            }
+        }
+        else {
+            // Создаём и открываем файл для записи
+            ofstream file(path);
+            if (!file.is_open()) {
+                throw runtime_error("Failed to create file for saving experiment configuration");
+            }
+            try {
+                // Записываем JSON в файл с отступами (4 пробела) для удобства чтения
+                file << json::array({ config }).dump(4);
                 file.close();
             }
             catch (...) {

@@ -3,7 +3,9 @@
 /build
 .*
 /Experiments
+/Experiments_traps
 /Results
+/Results_traps
 !.gitignore
 /images/**/Hist/
 /images/**/Projections*

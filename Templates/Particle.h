@@ -118,10 +118,11 @@ public:
                 Alive = false;
             }
         }
+        cout << "WA";
     }
 
-    string is_Alive() {
-        return (Alive ? "YES" : "NO");
+    bool is_Alive() {
+        return Alive;
     }
 
 private:
