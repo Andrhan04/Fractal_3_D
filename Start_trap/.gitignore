@@ -1,0 +1,8 @@
+# Игнорировать все файлы
+*
+
+# Не игнорировать файлы .cpp
+!*.cpp
+!.gitignore
+!input.exmple.json
+!README.md

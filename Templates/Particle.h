@@ -16,6 +16,7 @@ public:
         , angleHorizontal(1.0)
         , angleVertical(0.0)
         , work(false)
+        , Alive(true)
     {
         position = Point(
             static_cast<double>(generator_.get_int(1, 50)),
@@ -33,6 +34,7 @@ public:
         , angleHorizontal(0.0)
         , angleVertical(0.0)
         , work(false)
+        , Alive(true)
     {
     }
 
@@ -44,6 +46,7 @@ public:
         , angleHorizontal(0.0)
         , angleVertical(0.0)
         , work(false)
+        , Alive(true)
     {
     }
 
@@ -60,6 +63,7 @@ public:
         , angleHorizontal(other.angleHorizontal)
         , angleVertical(other.angleVertical)
         , work(other.work)
+        , Alive(true)
         //, randomGenerator_(std::move(other.randomGenerator_))
     {
         other.buf = nullptr;
@@ -98,11 +102,34 @@ public:
         }
     }
 
+    void out_traps() {
+        Fractal* root = this->root;
+        while (root != nullptr) {
+            cout << root->get_traps_count() << endl;
+            root->out_traps();
+            root = root->next;
+        }
+    }
+
+    void move(Point& new_pos) {
+        if (root->In_Figure(new_pos)) {
+            position = new_pos;
+            if (root->check_cath(position)) {
+                Alive = false;
+            }
+        }
+    }
+
+    string is_Alive() {
+        return (Alive ? "YES" : "NO");
+    }
+
 private:
     // Вложенные объекты теперь хранятся по ссылям
     BuferZone *buf;
     Fractal   *root;
 
+    bool Alive;
     bool work;                         // флаг: находится ли частица внутри фрактала
     double angleHorizontal;            // азимутальный угол (в градусах)
     double angleVertical;              // полярный угол (в градусах)
@@ -130,6 +157,9 @@ private:
         Point newPos = position + delta;
         if (root->In_Figure(newPos)) {
             position = newPos;
+            if (root->check_cath(position)) {
+                Alive = false;
+            }
         }
     }
 

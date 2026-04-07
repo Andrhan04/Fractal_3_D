@@ -1,6 +1,10 @@
 #pragma once
 #include "..\Templates\Point.h"
+#include "..\Templates\Trap.h"
 #include "..\Templates\Figure.h"
+#include "..\Templates\Generator.h"
+#include <math.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -78,6 +82,38 @@ public:
         return *this;
     }
 
+    // Генерация случайной точки на боковой поверхности цилиндра
+	// Цилиндры наклонные, но основания перпендикулярны оси OX
+	Point generate_point() {
+		// Генерируем случайный угол от 0 до 2π
+		double angle = gen.get_double(0.0, 2.0 * PI);
+		
+		// Генерируем случайную позицию вдоль оси цилиндра между центрами оснований
+		double t = gen.get_double(0.0, 1.0);
+		
+		// Вычисляем центр на оси цилиндра в позиции t
+		Point center(
+			down->O->x + t * (up->O->x - down->O->x),
+			down->O->y + t * (up->O->y - down->O->y),
+			down->O->z + t * (up->O->z - down->O->z)
+		);
+		
+		// Используем средний радиус двух окружностей
+		double avg_radius = (down->r + up->r) / 2.0;
+		
+		// Поскольку основания перпендикулярны OX, нормаль к основаниям - это ось OX
+		// Создаем два ортогональных вектора в плоскости, перпендикулярной OX
+		// Эти векторы будут лежать в плоскости оснований (YZ-плоскость, но смещенная)
+		Point perp1(0.0, 1.0, 0.0);  // Вектор вдоль оси Y
+		Point perp2(0.0, 0.0, 1.0);  // Вектор вдоль оси Z
+		
+		// Вычисляем точку на поверхности цилиндра
+		// Смещаем от центра в плоскости, перпендикулярной OX
+		Point surface_point = center + perp1 * (avg_radius * cos(angle)) + perp2 * (avg_radius * sin(angle));
+		
+		return surface_point;
+	}
+
     // Указатели заменены на shared_ptr для автоматического управления памятью
     shared_ptr<Figure> up;   // Верхняя фигура
     shared_ptr<Figure> down; // Нижняя фигура
@@ -87,6 +123,38 @@ public:
     Fractal* prev = nullptr;
     Fractal* next = nullptr;
 
+    void addTrap(Trap* trap) {
+        for (size_t i = 0; i < traps.size(); i++) {
+            if (traps[i]->distance(trap->position) <= 1) {
+                return;
+            }
+        }
+        traps.push_back(trap);
+	}
+
+    bool check_cath(Point& p) {
+        for (Trap* trap : traps) {
+            if (trap->is_catch(&p)) {
+                return true;
+            }
+        }
+        return false;
+	}
+
+
+    int get_traps_count() const {
+        return traps.size();
+	}
+
+    void out_traps() const {
+        for (auto i : traps) {
+            cout << *i << endl;
+        }
+    }
+
 private:
     // Закрытая часть класса пока пуста
+	vector<Trap*> traps; // Вектор указателей на ловушки, связанных с этим фракталом
+    Generator gen = Generator();
+    double PI = acos(-1);
 };

@@ -35,7 +35,7 @@ public:
     /** @brief Перегрузка вывода в поток */
     friend std::ostream& operator<<(std::ostream& os, const Point& p)
     {
-        os << p.x << " " << p.y << " " << p.z << "\n";
+        os << p.x << " " << p.y << " " << p.z;
         return os;
     }
 
@@ -48,6 +48,15 @@ public:
         double length = len();
         if (length != 0.0)
             *this = *this / length;
+    }
+
+    /** @brief Возвращает нормализованную копию вектора */
+    Point normalize() const
+    {
+        double length = len();
+        if (length != 0.0)
+            return *this / length;
+        return *this;
     }
 
     /** @brief Длина (модуль) вектора */
@@ -106,6 +115,12 @@ public:
     bool operator!=(const Point& p) const { return !(*this == p); }
     bool operator!=(const Point* p) const { return !(*this == p); }
 
+    bool operator<(const Point& p) const { return x < p.x || (x == p.x && y < p.y) && (x == p.x && y == p.y && z < p.z); }
+    bool operator<(const Point* p) const { return x < p->x || (x == p->x && y < p->y) && (x == p->x && y == p->y && z < p->z); }
+
+    bool operator>(const Point& p) const { return x > p.x || (x == p.x && y > p.y) && (x == p.x && y == p.y && z > p.z); }
+    bool operator>(const Point* p) const { return x > p->x || (x == p->x && y > p->y) && (x == p->x && y == p->y && z > p->z); }
+
     /* ------------------------------------------------------------------ */
     /*                          Указатели                                 */
     /* ------------------------------------------------------------------ */
@@ -115,7 +130,7 @@ public:
     /* ------------------------------------------------------------------ */
     /*                          Данные                                    */
     /* ------------------------------------------------------------------ */
-    double x{}, y{}, z{};  // инициализация по умолчанию через {}
+    double x = 0.0, y = 0.0, z = 0.0;  // инициализация по умолчанию через {}
 
 private:
     /* Пока нет приватных методов/данных */
