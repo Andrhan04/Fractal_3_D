@@ -8,5 +8,6 @@
 /Results_traps
 !.gitignore
 /images/**/Hist/
+/images/**/Heap_map/
 /images/**/Projections*
 **/input.json
