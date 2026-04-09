@@ -70,6 +70,19 @@ public:
         other.root = nullptr;
     }
 
+    // Функция обмена для поддержки std::swap
+    friend void swap(Particle& a, Particle& b) noexcept {
+        using std::swap;
+        swap(a.buf, b.buf);
+        swap(a.root, b.root);
+        swap(a.position, b.position);
+        swap(a.speed, b.speed);
+        swap(a.angleHorizontal, b.angleHorizontal);
+        swap(a.angleVertical, b.angleVertical);
+        swap(a.work, b.work);
+        swap(a.Alive, b.Alive);
+    }
+
     ~Particle() {
         // Удаляем buf, только если он был создан в конструкторе по умолчанию
         // В реальности лучше передавать владение через std::unique_ptr,
@@ -121,9 +134,19 @@ public:
         cout << "WA";
     }
 
-    bool is_Alive() {
+    bool is_Alive() const {
         return Alive;
     }
+
+    int get_traps_count() {
+        int count = 0;
+        Fractal* root = this->root;
+        while (root != nullptr) {
+            count += root->get_traps_count();
+            root = root->next;
+        }
+        return count;
+	}
 
 private:
     // Вложенные объекты теперь хранятся по ссылям

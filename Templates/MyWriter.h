@@ -155,7 +155,9 @@ public:
         try {
             //file << j << endl;
             for (const Particle& p : particles) {
-                file << p.position << endl;
+                if (p.is_Alive()) {
+                    file << p.position << endl;
+                }
             }
             file.close();
         }
@@ -207,7 +209,7 @@ public:
         }
     }
 
-    void write_result_experiment_config_with_trap(const json& config, int exp_id) {
+    void write_result_experiment_config_with_trap(const json& config, int exp_id, int trap_id = 0) {
         // Формируем полный путь к файлу конфигурации эксперимента по ID
         make_path(path_to_save_result_experiment_config_trap);
         string path = path_to_save_result_experiment_config_trap + to_string(exp_id) + ".json";
@@ -328,7 +330,9 @@ public:
         }
         try {
             for (const Particle& p : particles) {
-                file << p.position;
+				if (p.is_Alive()){
+                    file << p.position;
+                }
             }
             file.close();
         }

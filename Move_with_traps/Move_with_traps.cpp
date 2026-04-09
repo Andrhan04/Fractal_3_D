@@ -63,15 +63,19 @@ json programm(json& j, int trap_id) {
 	int try_id = j["result"];
 	int mem_out_bufer = -1;
 	int time_live = (particles.size() / 2.7);
+	int cnt_live = particles.size();
 	j["N/e"] = time_live;
-	for (int step = 0, cnt_live = 0; step < steps; step++) {
+	for (int step = 0; step < steps; step++) {
 		bool out = true;
-		cnt_live = 0;
-		for (size_t i = 0; i < particles.size(); i++) {
+		for (size_t i = 0; i < cnt_live; i++) {
 			if (particles[i].is_Alive()) {
 				particles[i].step();
 				out = out && particles[i].check_in_work();
-				cnt_live++;
+			}
+			if (!particles[i].is_Alive()) {
+				swap(particles[i], particles[cnt_live - 1]);
+				cnt_live--;
+				i--;
 			}
 		}
 		if (cnt_live <= time_live) {
@@ -87,14 +91,8 @@ json programm(json& j, int trap_id) {
 
 	j["particles_count"] = particles.size();
 	if (!j.contains("time_live")) j["time_live"] = -1;
-	int cnt_live = 0;
-	for (size_t i = 0; i < particles.size(); i++) {
-		if (particles[i].is_Alive()) {
-			cnt_live++;
-		}
-	}
 	j["Alive"] = cnt_live;
-
+	j["Traps_count"] = particles[0].get_traps_count();
 	for (auto& i : particles) {
 		if (!i.check()) {
 			cout << "ERROR" << i.position;
@@ -110,7 +108,10 @@ void check_input(int conf_id) {
 	input(conf_id, particles, 0);
 	if (particles.empty()) cout << "ERROR" << endl;
 	else {
-		//particles[0].out_traps();
+		cout << "Input data is correct. Number of particles: " << particles.size() << endl;
+		cout << particles[0].position << ' ' << particles[particles.size() - 1].position << endl;
+		swap(particles[0], particles[particles.size() - 1]);
+		cout << particles[0].position << ' ' << particles[particles.size() - 1].position << endl;
 	}
 	//Point p = Point(3.7, 1.5, 14.3);
 	//particles[0].move(p);
@@ -131,16 +132,18 @@ int main() {
 			int steps = value["steps"]; // сколько шагов сделают частицы
 			int exp_id = value["exp_id"]; // ID эксперимента для сохранения результатов
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
-
+			//check_input(conf_id);
 			json j_trap = reader.read_config(conf_id);
 			for (int trap_id = 0; trap_id < j_trap["Traps"].size(); trap_id++) {
+				cerr << "Running configuration " << conf_id << " with trap " << trap_id << "...\n";
 				vector<json> results(repeat);
 				for (int i = 0; i < repeat; i++) {
 					json j;
 					j["conf_id"] = conf_id;
-					j["experiment_id"] = exp_id + trap_id;
+					j["experiment_id"] = exp_id;
 					j["steps"] = steps;
 					j["result"] = writer.get_new_id_try_traps();
+					j["Trap_id"] = j_trap["Traps"][trap_id];
 					results[i] = j;
 				}
 				#pragma omp parallel for
@@ -151,7 +154,6 @@ int main() {
 				for (auto& res : results) {
 					writer.write_result_experiment_config_with_trap(res, exp_id);
 				}
-				break;
 			}
 		}
 		return 0;
