@@ -78,14 +78,14 @@ json programm(json& j, int trap_id) {
 				i--;
 			}
 		}
-		if (cnt_live <= time_live) {
+		if (cnt_live <= time_live && !j.contains("time_live")) {
 			j["time_live"] = step + 1;
 		}
 		if (out && mem_out_bufer < 0) {
 			mem_out_bufer = step;
 		}
 		if (step % 100000 == 0 && step != 0) {
-			writer->write_step(particles, try_id, step);
+			writer->write_step_trap(particles, try_id, step);
 		}
 	}
 
@@ -134,7 +134,7 @@ int main() {
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
 			//check_input(conf_id);
 			json j_trap = reader.read_config(conf_id);
-			for (int trap_id = 0; trap_id < j_trap["Traps"].size(); trap_id++) {
+			for (int trap_id = 30; trap_id < j_trap["Traps"].size(); trap_id++) {
 				cerr << "Running configuration " << conf_id << " with trap " << trap_id << "...\n";
 				vector<json> results(repeat);
 				for (int i = 0; i < repeat; i++) {

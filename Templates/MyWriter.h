@@ -86,6 +86,7 @@ private:
 	string path_to_save_result_experiment_config; // базовый путь для сохранения конфигурации эксперимента
     string path_to_save_result_experiment_config_trap; // базовый путь для сохранения конфигурации эксперимента
 	string path_to_file_step;     // базовый путь для сохранения данных по шагам симуляции
+    string path_to_file_step_trap;
     string path_to_traps;
 public:
     MyWriter() {
@@ -98,6 +99,7 @@ public:
 		path_to_save_result_experiment_config = "..\\Results\\experiment_";
         path_to_save_result_experiment_config_trap = "..\\Results_traps\\experiment_";
 		path_to_file_step = "..\\Experiments\\Experiment_";
+        path_to_file_step_trap = "..\\Experiments_traps\\Experiment_";
         path_to_traps = "..\\Sowing\\Trap\\Traps_";
     }
 
@@ -339,6 +341,26 @@ public:
         catch (...) {
             throw runtime_error("Failed saving step data");
 		}
+    }
+
+    void write_step_trap(const vector<Particle>& particles, int exp_id, int step) {
+        string path = path_to_file_step_trap + to_string(exp_id) + "\\step_" + to_string(step) + ".txt";
+        make_path(path);
+        ofstream file(path);
+        if (!file.is_open()) {
+            throw runtime_error("Failed to create file for saving step data");
+        }
+        try {
+            for (const Particle& p : particles) {
+                if (p.is_Alive()) {
+                    file << p.position;
+                }
+            }
+            file.close();
+        }
+        catch (...) {
+            throw runtime_error("Failed saving step data");
+        }
     }
 
 
