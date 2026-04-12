@@ -2,16 +2,17 @@ import json
 import numpy as np
 from scipy.optimize import curve_fit
 
+func = "a/(values_x**(b))"
 def function(values_x, a, b):
-    #return (2.71**values_x)*b + a                  # не работает на времени жизни
+    #return (2.71**values_x)*a + b                  # не работает на времени жизни
     #return a/values_x + b                          # 7.484% на времени жизни
-    return a/(values_x**2) + b                      # не работает на времени жизни
-    #return (np.log(values_x)*b + a)                # 11.134% на времени жизни
+    #return a/(values_x**2) + b                      # не работает на времени жизни
+    #return (np.log(values_x)*a + b)                # 11.134% на времени жизни
     #return ((2.71**values_x)*b + a*(values_x**2))  # не работает на времени жизни
     #return ((values_x)*b + a*(values_x**2))        # 24.737% на времени жизни
-    #return ((values_x)*b + a)                      # 14.649% на времени жизни
+    #return ((values_x)*a + b)                      # 14.649% на времени жизни
     #return (a/(values_x**(1/2)) + b)               # 9.327% на времени жизни
-    #return (a/(values_x**(b)))                     # не работает на времени жизни
+    return (a/(values_x**(b)))                     # не работает на времени жизни
 
 class Structure:
     trap_id : int
@@ -112,17 +113,46 @@ def approximation_time_live(data : list[Structure]):
 def approximation_alive_cnt(data : list[Structure]):
     x = [structure.trap_cnt for structure in data]
     y = [structure.get_avg_alive_cnt() for structure in data]
-    args, covar = curve_fit(function, x, y)
-    a =  args[0]
-    b =  args[1]
-    print(f"Параметры аппроксимации: a = {a}, b = {b}")
-    print(f"Погрешность аппроксимации: {cnt_good(x, y, a, b, function)}%")
+    
+    try:
+        args, covar = curve_fit(function, x, y)
+        a =  args[0]
+        b =  args[1]
+        print(f"Параметры аппроксимации: a = {a}, b = {b}")
+        print(f"Погрешность аппроксимации: {cnt_good(x, y, a, b, function)}%")
+        j : json = {
+            "Function" : func, 
+            "args" : [a,b], # [a,b]
+            "Loss" : cnt_good(x, y, a, b, function) # "-"
+        }
+    except Exception as e:
+        print(e)
+        j : json = {
+            "Function" : func, 
+            "args" : [],
+            "Loss" : None
+        }
+    file_name = f"../Depends/exp_{experimet_id}_alive.json"
+    try:
+        with open(file_name, 'r', encoding="utf-8") as file_save:
+            all_data : list[json] = json.load(file_save)
+            all_data.append(j)
+        with open(file_name, 'w', encoding="utf-8") as file_save:
+            json.dump(all_data, file_save, indent=4)
+    except Exception as e:
+        print(e)
+        with open(file_name, 'w', encoding="utf-8") as file_save:
+            json.dump([j], file_save)
+        
+        
+        
 
 def main():
     data = get_data()
     for exp in data:
         print(exp)
-    approximation_time_live(data)
+    
+    #approximation_time_live(data)
     approximation_alive_cnt(data)
     
 if __name__ == "__main__":
