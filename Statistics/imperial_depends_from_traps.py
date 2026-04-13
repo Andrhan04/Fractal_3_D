@@ -126,7 +126,7 @@ def plot_alive_cnt(data : list[Structure]):
     
     plt.ylabel('Среднее количество живых частиц', fontsize=12)
     plt.ylim(0, all_particles_cnt)  # Устанавливаем пределы от 0 до общего количества частиц
-    y_ticks = [i * 100 for i in np.arange(0, all_particles_cnt//100)]
+    y_ticks = [i * 50 for i in np.arange(0, all_particles_cnt//50)]
     y_ticks_labels = [str(cnt_alive) for cnt_alive in y_ticks]
     plt.yticks(y_ticks, y_ticks_labels, fontsize=10)
     

@@ -134,7 +134,7 @@ int main() {
 			cout << "Configuration ID: " << conf_id << ", Repeat: " << repeat << ", Steps: " << steps << endl;
 			//check_input(conf_id);
 			json j_trap = reader.read_config(conf_id);
-			for (int trap_id = 30; trap_id < j_trap["Traps"].size(); trap_id++) {
+			for (int trap_id = 0; trap_id < j_trap["Traps"].size(); trap_id++) {
 				cerr << "Running configuration " << conf_id << " with trap " << trap_id << "...\n";
 				vector<json> results(repeat);
 				for (int i = 0; i < repeat; i++) {
