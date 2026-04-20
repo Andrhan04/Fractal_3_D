@@ -4,11 +4,11 @@
         "Function": "a * x + b",
         "LaTex": "$ax + b$",
         "args": [
-            -0.23276944856568482,
-            986.3248223146879
+            -11741.565346178053,
+            37973741.75494045
         ],
-        "Loss": 2.935,
-        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_0.png"
+        "Loss": 25.88,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/time_live_0.png"
     },
     {
         "Function_id": 1,
@@ -29,22 +29,22 @@
         "Function": "a / (x^2) + b",
         "LaTex": "$\\frac{a}{x^2} + b$",
         "args": [
-            313767216.16639227,
-            400.7402089149423
+            1.0,
+            4558314.184547822
         ],
-        "Loss": 14.909,
-        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_3.png"
+        "Loss": 48.73,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/time_live_3.png"
     },
     {
         "Function_id": 4,
         "Function": "a * log(x) + b",
         "LaTex": "$a \\times log(x) + b$",
         "args": [
-            -388.1663517595681,
-            3445.346045106089
+            -33178495.97095345,
+            268406443.05613738
         ],
-        "Loss": 5.118,
-        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_4.png"
+        "Loss": 25.892,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/time_live_4.png"
     },
     {
         "Function_id": 5,
@@ -58,33 +58,29 @@
         "Function": "a*(x**2) + x*b + c",
         "LaTex": "$ax^2 + bx + c$",
         "args": [
-            1.0504290318125165e-05,
-            -0.2723706230438636,
-            1018.6906416004919
+            8.197758182861044,
+            -58060.60695078918,
+            103233763.4235055
         ],
-        "Loss": 2.82,
-        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_6.png"
+        "Loss": 26.244,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/time_live_6.png"
     },
     {
         "Function_id": 7,
         "Function": "a / (sqrt(x)) + b",
         "LaTex": "$\\frac{a}{\\sqrt{x}} + b$",
         "args": [
-            29626.063749556863,
-            -176.66042114185367
+            3523257402.8735905,
+            -61548112.48964095
         ],
-        "Loss": 7.607,
-        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_7.png"
+        "Loss": 25.932,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/time_live_7.png"
     },
     {
         "Function_id": 8,
         "Function": "a / (x ^ b)",
         "LaTex": "$\\frac{a}{x^b}$",
-        "args": [
-            56977.45144521417,
-            0.6263821515962749
-        ],
-        "Loss": 8.529,
-        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_8.png"
+        "args": [],
+        "Loss": null
     }
 ]

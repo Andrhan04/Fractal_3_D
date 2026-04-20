@@ -34,7 +34,11 @@ class Structure:
         return self.trap_cnt < value.trap_cnt
     
     def __str__(self):
-        return f"trap_cnt: {self.trap_cnt}, time_live: {self.get_avg_time_live()}, alive_cnt: {self.get_avg_alive_cnt()}"
+        avg_time_live = (self.get_avg_time_live())
+        if avg_time_live != None:
+            return f"trap_id: {self.trap_id:03} trap_cnt: {self.trap_cnt:04}, time_live({len(self.time_live):02}): {avg_time_live:8.3f}, alive_cnt: {self.get_avg_alive_cnt():.2f}"
+        else:
+            return f"trap_id: {self.trap_id:03} trap_cnt: {self.trap_cnt:04}, time_live({len(self.time_live):02}): {"None":11}, alive_cnt: {self.get_avg_alive_cnt():.2f}"
     
     def __gt__(self, other):
         return self.trap_cnt > other.trap_cnt
@@ -83,16 +87,21 @@ def get_parametrs() -> list[Structure]:
 
 def plot_time_live(data : list[Structure]):
     plt.figure(figsize=(12, 8))
-    x = [structure.trap_cnt for structure in data]
-    y = [structure.get_avg_time_live() for structure in data]
-    plt.plot(x, y)
+    x = []
+    y = []
+    for structure in data:
+        avg = structure.get_avg_time_live()
+        if avg != None:
+            y.append(avg)
+            x.append(structure.trap_cnt)
+    plt.plot(x, y, ls ='-')
     plt.xlabel('Количество ловушек', fontsize=12)
     plt.ylabel('Среднее время жизни', fontsize=12)
     
     
-    plt.ylim(0, 10**7)    
+    plt.ylim(0, steps)    
     # Создаем деления в линаричном масштабе
-    y_ticks = [i * 5 * (10**5) for i in np.arange(0, 21)]
+    y_ticks = [i * 5 * (10**5) for i in np.arange(0, steps//(5 * (10**5)) + 1)]
     # Форматируем метки для отображения
     y_tick_labels = []
     for tick in y_ticks:
@@ -105,10 +114,10 @@ def plot_time_live(data : list[Structure]):
             y_tick_labels.append("")
     plt.yticks(y_ticks, y_tick_labels, fontsize=10)
         
-    x_ticks = [structure.trap_cnt for structure in data]
-    x_ticks_labels = [str(trap_cnt) if trap_cnt % 50 == 0 else "" for trap_cnt in x_ticks]
+    x_ticks = [data[i].trap_cnt for i in range(0, len(data), 5)]
+    x_ticks_labels = [str(trap_cnt) if trap_cnt % 100 == 0 else "" for trap_cnt in x_ticks]
     plt.xticks(x_ticks, x_ticks_labels, fontsize=10)
-    plt.xlim(min(x), max(x))
+    plt.xlim(data[0].trap_cnt, data[-1].trap_cnt)
     
     # Добавляем дополнительное пространство для меток
     plt.title(f'Время жизни у частиц (с колличеством {all_particles_cnt}), \nв конфигузации {configuration_field}, эксперимент {experimet_id} на {steps} шагов', fontsize=14)
@@ -122,7 +131,7 @@ def plot_alive_cnt(data : list[Structure]):
     plt.figure(figsize=(12, 8))
     x = [structure.trap_cnt for structure in data]
     y = [structure.get_avg_alive_cnt() for structure in data]
-    plt.plot(x, y)
+    plt.plot(x, y, ls = "-")
     
     plt.ylabel('Среднее количество живых частиц', fontsize=12)
     plt.ylim(0, all_particles_cnt)  # Устанавливаем пределы от 0 до общего количества частиц
@@ -132,8 +141,8 @@ def plot_alive_cnt(data : list[Structure]):
     
     plt.xlim(min(x), max(x))
     plt.xlabel('Количество ловушек', fontsize=12)
-    x_ticks = [structure.trap_cnt for structure in data]
-    x_ticks_labels = [str(trap_cnt) if trap_cnt % 50 == 0 else "" for trap_cnt in x_ticks]
+    x_ticks = [data[i].trap_cnt for i in range(0, len(data), 5)]
+    x_ticks_labels = [str(trap_cnt) if trap_cnt % 100 == 0 else "" for trap_cnt in x_ticks]
     plt.xticks(x_ticks, x_ticks_labels, fontsize=10)
     
     plt.title(f'Количество живых частиц из {all_particles_cnt}, \nв конфигузации {configuration_field}, эксперимент {experimet_id} на {steps} шагов', fontsize=14)
