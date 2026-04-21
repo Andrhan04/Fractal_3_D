@@ -4,10 +4,10 @@
         "Function": "a * x + b",
         "LaTex": "$ax + b$",
         "args": [
-            -0.23276944856568482,
-            986.3248223146879
+            -0.23011418706340764,
+            982.3055332976927
         ],
-        "Loss": 2.935,
+        "Loss": 3.201,
         "path_to_paint": "../image_depends/aproxy/experiment_1/alive_0.png"
     },
     {
@@ -15,24 +15,26 @@
         "Function": "a * e^x + b",
         "LaTex": "$ae^x + b$",
         "args": [],
-        "Loss": null
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_1.png"
     },
     {
         "Function_id": 2,
         "Function": "a / x + b",
         "LaTex": "$\\frac{a}{x} + b$",
         "args": [],
-        "Loss": null
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_2.png"
     },
     {
         "Function_id": 3,
         "Function": "a / (x^2) + b",
         "LaTex": "$\\frac{a}{x^2} + b$",
         "args": [
-            313767216.16639227,
-            400.7402089149423
+            328428796.3790825,
+            386.1416467045421
         ],
-        "Loss": 14.909,
+        "Loss": 16.502,
         "path_to_paint": "../image_depends/aproxy/experiment_1/alive_3.png"
     },
     {
@@ -40,10 +42,10 @@
         "Function": "a * log(x) + b",
         "LaTex": "$a \\times log(x) + b$",
         "args": [
-            -388.1663517595681,
-            3445.346045106089
+            -395.121489383763,
+            3495.3008222854296
         ],
-        "Loss": 5.118,
+        "Loss": 5.438,
         "path_to_paint": "../image_depends/aproxy/experiment_1/alive_4.png"
     },
     {
@@ -51,18 +53,19 @@
         "Function": "a * (x^2) + b * (e^x)",
         "LaTex": "$ax^2 + be^x$",
         "args": [],
-        "Loss": null
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_1/alive_5.png"
     },
     {
         "Function_id": 6,
         "Function": "a*(x**2) + x*b + c",
         "LaTex": "$ax^2 + bx + c$",
         "args": [
-            1.0504290318125165e-05,
-            -0.2723706230438636,
-            1018.6906416004919
+            1.290784611129394e-05,
+            -0.2804547869525928,
+            1024.610999036828
         ],
-        "Loss": 2.82,
+        "Loss": 2.963,
         "path_to_paint": "../image_depends/aproxy/experiment_1/alive_6.png"
     },
     {
@@ -70,10 +73,10 @@
         "Function": "a / (sqrt(x)) + b",
         "LaTex": "$\\frac{a}{\\sqrt{x}} + b$",
         "args": [
-            29626.063749556863,
-            -176.66042114185367
+            30484.93882606441,
+            -201.20898785357173
         ],
-        "Loss": 7.607,
+        "Loss": 8.252,
         "path_to_paint": "../image_depends/aproxy/experiment_1/alive_7.png"
     },
     {
@@ -81,10 +84,10 @@
         "Function": "a / (x ^ b)",
         "LaTex": "$\\frac{a}{x^b}$",
         "args": [
-            56977.45144521417,
-            0.6263821515962749
+            65953.8395472235,
+            0.647294069703777
         ],
-        "Loss": 8.529,
+        "Loss": 9.495,
         "path_to_paint": "../image_depends/aproxy/experiment_1/alive_8.png"
     }
 ]

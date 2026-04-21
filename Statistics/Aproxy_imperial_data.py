@@ -117,7 +117,8 @@ class Function:
                 "Function" : self.s, 
                 "LaTex" : self.get_LaTex(),
                 "args" : [],
-                "Loss" : None
+                "Loss" : None,
+                "path_to_paint" : self.path_to_save
             }
         elif (self.c == None):
             j = {
