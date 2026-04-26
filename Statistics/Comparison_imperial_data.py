@@ -181,9 +181,10 @@ def plot_alive_cnt(data : list[Experiment]):
         x, y = exp.get_avg_alive()
         plt.plot(x, y, ls ='-', label = exp.get_name_label())
     
-    plt.savefig(save_name, dpi=300)
     plt.tight_layout()
-    plt.show()
+    plt.legend()
+    plt.savefig(save_name, dpi=300)
+    # plt.show()
     plt.close()
     
     
@@ -228,6 +229,7 @@ def plot_time_live(data : list[Experiment]):
         plt.plot(x, y, ls ='-', label = exp.get_name_label())
     
     plt.tight_layout()
+    plt.legend()
     plt.savefig(save_name, dpi=300)
     plt.close()
     

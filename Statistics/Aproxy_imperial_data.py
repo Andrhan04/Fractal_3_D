@@ -165,7 +165,7 @@ class Function:
         
         # Настройка отрисовки по оси x
         plt.xlabel('Количество ловушек', fontsize=12)
-        plt.xlim(min(x), max(x))
+        plt.xlim(min([structure.trap_cnt for structure in data]), max([structure.trap_cnt for structure in data]))
         x_ticks = [data[i].trap_cnt for i in range(0, len(data), 5)]
         x_ticks_labels = [str(trap_cnt) if trap_cnt % 100 == 0 else "" for trap_cnt in x_ticks]
         plt.xticks(x_ticks, x_ticks_labels, fontsize=10)

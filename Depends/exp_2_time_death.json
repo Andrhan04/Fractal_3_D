@@ -1,0 +1,74 @@
+[
+    {
+        "Function_id": 0,
+        "Function": "a * x + b",
+        "LaTex": "$ax + b$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_0.png"
+    },
+    {
+        "Function_id": 1,
+        "Function": "a * e^x + b",
+        "LaTex": "$ae^x + b$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_1.png"
+    },
+    {
+        "Function_id": 2,
+        "Function": "a / x + b",
+        "LaTex": "$\\frac{a}{x} + b$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_2.png"
+    },
+    {
+        "Function_id": 3,
+        "Function": "a / (x^2) + b",
+        "LaTex": "$\\frac{a}{x^2} + b$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_3.png"
+    },
+    {
+        "Function_id": 4,
+        "Function": "a * log(x) + b",
+        "LaTex": "$a \\times log(x) + b$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_4.png"
+    },
+    {
+        "Function_id": 5,
+        "Function": "a * (x^2) + b * (e^x)",
+        "LaTex": "$ax^2 + be^x$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_5.png"
+    },
+    {
+        "Function_id": 6,
+        "Function": "a*(x**2) + x*b + c",
+        "LaTex": "$ax^2 + bx + c$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_6.png"
+    },
+    {
+        "Function_id": 7,
+        "Function": "a / (sqrt(x)) + b",
+        "LaTex": "$\\frac{a}{\\sqrt{x}} + b$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_7.png"
+    },
+    {
+        "Function_id": 8,
+        "Function": "a / (x ^ b)",
+        "LaTex": "$\\frac{a}{x^b}$",
+        "args": [],
+        "Loss": null,
+        "path_to_paint": "../image_depends/aproxy/experiment_2/time_live_8.png"
+    }
+]
