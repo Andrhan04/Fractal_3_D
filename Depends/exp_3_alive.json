@@ -4,11 +4,11 @@
         "Function": "a * x + b",
         "LaTex": "$ax + b$",
         "args": [
-            -0.09668300132802088,
-            996.7326494023902
+            -0.0640970821475999,
+            1003.4608241320448
         ],
-        "Loss": 1.192,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_0.png"
+        "Loss": 1.054,
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_0.png"
     },
     {
         "Function_id": 1,
@@ -16,7 +16,7 @@
         "LaTex": "$ae^x + b$",
         "args": [],
         "Loss": null,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_1.png"
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_1.png"
     },
     {
         "Function_id": 2,
@@ -24,29 +24,29 @@
         "LaTex": "$\\frac{a}{x} + b$",
         "args": [],
         "Loss": null,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_2.png"
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_2.png"
     },
     {
         "Function_id": 3,
         "Function": "a / (x^2) + b",
         "LaTex": "$\\frac{a}{x^2} + b$",
         "args": [
-            136805352.10662133,
-            746.7849020594363
+            89745179.46019931,
+            838.1822973527658
         ],
-        "Loss": 4.127,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_3.png"
+        "Loss": 2.669,
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_3.png"
     },
     {
         "Function_id": 4,
         "Function": "a * log(x) + b",
         "LaTex": "$a \\times log(x) + b$",
         "args": [
-            -165.47083120748215,
-            2048.522937673932
+            -109.4949937636562,
+            1699.214747585386
         ],
-        "Loss": 1.712,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_4.png"
+        "Loss": 1.338,
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_4.png"
     },
     {
         "Function_id": 5,
@@ -54,40 +54,40 @@
         "LaTex": "$ax^2 + be^x$",
         "args": [],
         "Loss": null,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_5.png"
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_5.png"
     },
     {
         "Function_id": 6,
         "Function": "a*(x**2) + x*b + c",
         "LaTex": "$ax^2 + bx + c$",
         "args": [
-            2.4564696138318354e-06,
-            -0.10626323282218464,
-            1004.7837285618193
+            1.2237375232038161e-06,
+            -0.06886965848908999,
+            1007.4716238645469
         ],
-        "Loss": 1.18,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_6.png"
+        "Loss": 1.057,
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_6.png"
     },
     {
         "Function_id": 7,
         "Function": "a / (sqrt(x)) + b",
         "LaTex": "$\\frac{a}{\\sqrt{x}} + b$",
         "args": [
-            12747.093513173637,
-            500.9520088305688
+            8422.016773397247,
+            675.4719484772666
         ],
-        "Loss": 2.273,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_7.png"
+        "Loss": 1.631,
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_7.png"
     },
     {
         "Function_id": 8,
         "Function": "a / (x ^ b)",
         "LaTex": "$\\frac{a}{x^b}$",
         "args": [
-            3533.4708891995347,
-            0.19725890868365586
+            2185.852748443161,
+            0.12178491617004497
         ],
-        "Loss": 1.925,
-        "path_to_paint": "../image_depends/aproxy/experiment_2/alive_8.png"
+        "Loss": 1.405,
+        "path_to_paint": "../image_depends/aproxy/experiment_3/alive_8.png"
     }
 ]
